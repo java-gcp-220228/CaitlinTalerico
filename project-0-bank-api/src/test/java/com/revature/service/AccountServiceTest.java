@@ -1,27 +1,34 @@
 package com.revature.service;
 
 import com.revature.model.Account;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 public class AccountServiceTest {
-    public Account getAccountByID(int id) {
+
+    @Test
+    public Account test_getAccountByID(int id) {
         return null;
     }
 
-    public List<Account> getAllAccounts() {
+    @Test
+    public List<Account> test_getAllAccounts() {
         return null;
     }
 
-    public void updateAccount() {
+    @Test
+    public void test_updateAccount() {
 
     }
 
-    public void createAccount() {
+    @Test
+    public void test_createAccount() {
 
     }
 
-    public void deleteAccount() {
+    @Test
+    public void test_deleteAccount() {
 
     }
 }
