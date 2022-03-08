@@ -18,8 +18,9 @@ public class ConnectionUtility {
 
         // Credentials to establish connection
         String url = System.getenv("db_url");
-        String username = System.getenv("username");
-        String password = System.getenv("db_password");
+        String username = System.getenv("bank_username");
+        //String password = System.getenv("db_password");
+        String password = "03571995Ct!";
 
         Connection connection = DriverManager.getConnection(url, username, password);
 

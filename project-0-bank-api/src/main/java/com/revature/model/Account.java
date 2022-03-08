@@ -7,16 +7,18 @@ public class Account {
     private String accountType;
     private Double balance;
     private int clientId;
+    private long accountNumber;
 
     public Account() {
 
     }
 
-    public Account(int id, String accountType, Double balance, int clientId) {
+    public Account(int id, String accountType, double balance, int clientId, long accountNumber) {
         this.id = id;
         this.accountType = accountType;
         this.balance = balance;
         this.clientId = clientId;
+        this.accountNumber = accountNumber;
     }
 
     public int getId() {
@@ -35,7 +37,7 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public Double getBalance() {
+    public double getBalance() {
         return balance;
     }
 
@@ -72,5 +74,13 @@ public class Account {
                 ", balance=" + balance +
                 ", clientId=" + clientId +
                 '}';
+    }
+
+    public long getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(long accountNumber) {
+        this.accountNumber = accountNumber;
     }
 }
