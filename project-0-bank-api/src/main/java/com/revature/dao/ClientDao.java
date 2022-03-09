@@ -33,7 +33,7 @@ public class ClientDao {
     }
 
     // R-READ
-    public Client getClient(int id) throws SQLException {
+    public Client getClientById(int id) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
             String sql = "SELECT * FROM clients WHERE id =  ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
