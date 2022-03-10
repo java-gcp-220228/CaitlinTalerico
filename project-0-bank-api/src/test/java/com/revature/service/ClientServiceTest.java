@@ -158,9 +158,10 @@ public class ClientServiceTest {
 
     // Positive
     @Test
-    public void test_deleteClient() throws SQLException {
+    public void test_deleteClient() throws SQLException, ClientNotFoundException {
         ClientDao mockedObject = mock(ClientDao.class);
 
+        when(mockedObject.getClientById(eq(1))).thenReturn(new Client());
         when(mockedObject.deleteClientById(eq(1))).thenReturn(true);
 
         ClientService clientService = new ClientService(mockedObject);
@@ -170,9 +171,10 @@ public class ClientServiceTest {
 
     // Negative
     @Test
-    public void test_deleteClient_NotDeleted() throws SQLException {
+    public void test_deleteClient_NotDeleted() throws SQLException, ClientNotFoundException {
         ClientDao mockedObject = mock(ClientDao.class);
 
+        when(mockedObject.getClientById(eq(1))).thenReturn(new Client());
         when(mockedObject.deleteClientById(eq(1))).thenReturn(false);
 
         ClientService clientService = new ClientService(mockedObject);

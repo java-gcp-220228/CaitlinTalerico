@@ -3,12 +3,16 @@ package com.revature.service;
 import com.revature.dao.ClientDao;
 import com.revature.exceptions.ClientNotFoundException;
 import com.revature.model.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClientService {
+
+    public static Logger logger = LoggerFactory.getLogger(ClientService.class);
 
     private ClientDao clientDao;
 
@@ -49,16 +53,27 @@ public class ClientService {
 
     }
 
-    public Client updateClient(Client client) throws SQLException {
+    public Client updateClient(String id, Client client) throws SQLException, ClientNotFoundException {
         validateClientInformation(client);
-
-        Client updatedClient = clientDao.updateClient(client);
-        return updatedClient;
-    }
-
-    public boolean deleteClient(String id) throws SQLException {
         try {
             int clientId = Integer.parseInt(id);
+            if (clientDao.getClientById(clientId) == null) {
+                throw new ClientNotFoundException("Client with id " + id + " does not exist. Unable to edit this client.");
+            }
+            client.setId(clientId);
+            return clientDao.updateClient(client);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("A valid number was not given for the client ID. \nInput: " + id);
+        }
+    }
+
+    public boolean deleteClient(String id) throws SQLException, ClientNotFoundException {
+        try {
+            int clientId = Integer.parseInt(id);
+
+            if (clientDao.getClientById(clientId) == null) {
+                throw new ClientNotFoundException("Client with id " + id + " does not exits. Unable to delete client.");
+            }
 
             return clientDao.deleteClientById(clientId);
         } catch (IllegalArgumentException e) {
