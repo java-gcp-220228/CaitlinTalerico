@@ -1,9 +1,10 @@
 package com.revature.service;
 
 import com.revature.dao.AccountDao;
+import com.revature.exceptions.AccountNotFoundException;
 import com.revature.model.Account;
-import com.revature.model.Client;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class AccountService {
@@ -18,24 +19,47 @@ public class AccountService {
     public AccountService(AccountDao mockDao) {
         this.accountDao = mockDao;
     }
-    public Account getAccountByID(String clientId, String id) {
-        return null;
+    public Account getAccountByID(String clientId, String id) throws SQLException, AccountNotFoundException {
+
+        int cId = validateIdAndReturnInt(clientId);
+        int accountId = validateIdAndReturnInt(id);
+
+        Account account = accountDao.getAccountByAccountID(cId, accountId);
+
+        if (account == null) {
+            throw new AccountNotFoundException("An account with the id of " + accountId +
+                    " does not exist for this client.");
+        }
+        return account;
     }
 
-    public List<Account> getAllAccounts(String clientId) {
-        return null;
+    public List<Account> getAllAccounts(String clientId) throws SQLException {
+
+        int cId = validateIdAndReturnInt(clientId);
+        return accountDao.getAllAccounts(cId);
     }
 
-    public void updateAccount(String clientId, String id) {
+    public Account updateAccount(Account account) throws SQLException {
 
+        validateAccountInformation(account);
+
+        Account updatedAccount = accountDao.updateAccount(account);
+        return updatedAccount;
     }
 
-    public void createAccount(String clientId) {
+    public Account createAccount(Account account) throws SQLException {
 
+        validateAccountInformation(account);
+        Account addedAccount = accountDao.createAccount(account);
+
+        return addedAccount;
     }
 
-    public void deleteAccount(String clientId, String id) {
+    public boolean deleteAccount(String clientId, String id) throws SQLException {
+        int cId = validateIdAndReturnInt(clientId);
+        int accountId = validateIdAndReturnInt(id);
 
+        return accountDao.deleteAccountById(cId, accountId);
     }
 
     public void validateAccountInformation(Account account) {
@@ -55,5 +79,15 @@ public class AccountService {
                     "Input: " + account.getAccountType());
         }
 
+    }
+
+    public int validateIdAndReturnInt(String id) {
+        try {
+            int intId = Integer.parseInt(id);
+            return intId;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("A valid number was not provided for the ID.\n" +
+                    "Input: " + id);
+        }
     }
 }

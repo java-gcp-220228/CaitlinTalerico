@@ -49,6 +49,13 @@ public class ClientService {
 
     }
 
+    public Client updateClient(Client client) throws SQLException {
+        validateClientInformation(client);
+
+        Client updatedClient = clientDao.updateClient(client);
+        return updatedClient;
+    }
+
     public boolean deleteClient(String id) throws SQLException {
         try {
             int clientId = Integer.parseInt(id);
