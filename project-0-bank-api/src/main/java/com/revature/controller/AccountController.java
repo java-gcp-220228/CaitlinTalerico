@@ -19,7 +19,7 @@ public class AccountController implements Controller{
     private final Handler getAllAccounts = (ctx) -> {
         String paramMaxBalance = ctx.queryParam("amountLessThan");
         String paramMinBalance = ctx.queryParam("amountGreaterThan");
-        String paramType = ctx.pathParam("Type");
+        String paramType = ctx.queryParam("Type");
         String clientId = ctx.pathParam("clientId");
 
         if (paramMaxBalance != null) {
@@ -56,24 +56,47 @@ public class AccountController implements Controller{
     };
 
     private final Handler addAccount = (ctx) -> {
-        Account accountToAdd = ctx.bodyAsClass(Account.class);
+        String accountType = ctx.formParam("account_type");
+        String newBalance = ctx.formParam("balance");
+        System.out.println(ctx.body().contains("account_type"));
+        System.out.println(accountType);
+        System.out.println(newBalance);
 
-        String clientId = ctx.pathParam("clientId");
-
-        Account newAccount = accountService.createAccount(clientId, accountToAdd);
-        ctx.status(201);
-        ctx.json(newAccount);
+        Account accountToAdd = new Account();
+        if (accountType != null) {
+            if (newBalance != null)
+                try{
+                    double balance = Double.parseDouble(ctx.formParam("balance"));
+                    accountToAdd.setBalance(balance);
+                } catch (IllegalArgumentException e){
+                    throw new IllegalArgumentException("Invalid balance provided.\n" +
+                            "Input: " + ctx.formParam("balance"));
+                }
+            String clientId = ctx.pathParam("clientId");
+            accountToAdd.setAccountType(accountType);
+            Account newAccount = accountService.createAccount(clientId, accountToAdd);
+            ctx.status(201);
+            ctx.json(newAccount);
+        } else {
+            ctx.status(400);
+            ctx.json("Improper request body provided. Please use the template below to form your request.\n" +
+                    "{\n" +
+                    "   \"account_type\" : \"\",\n" +
+                    "    \"balance\" : \"(optional)\",\n" +
+                    "}");
+        }
     };
 
     private final Handler updateAccount = (ctx) -> {
-          Account accountToEdit = ctx.bodyAsClass(Account.class);
+        ctx.bodyValidator(Account.class);
+        Account accountToEdit = ctx.bodyAsClass(Account.class);
 
-          String clientId = ctx.pathParam("clientId");
-          String accountId = ctx.pathParam("accountId");
+        String clientId = ctx.pathParam("clientId");
+        String accountId = ctx.pathParam("accountId");
 
-          Account editedAccount = accountService.updateAccount(clientId, accountId, accountToEdit);
-          ctx.status(201);
-          ctx.json(editedAccount);
+        Account editedAccount = accountService.updateAccount(clientId, accountId, accountToEdit);
+        ctx.status(201);
+        ctx.json(editedAccount);
     };
 
     private final Handler deleteAccount = (ctx) -> {

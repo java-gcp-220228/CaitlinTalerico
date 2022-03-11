@@ -27,9 +27,9 @@ public class AccountDao {
 
             ResultSet rs = pstmt.getGeneratedKeys();
             rs.next();
-            int generatedId = rs.getInt(1);
 
-            return new Account(generatedId, account.getAccountType(), account.getBalance(), account.getClientId(), account.getAccountNumber());
+
+            return new Account(account.getAccountType(), account.getBalance(), account.getClientId(), account.getAccountNumber());
 
         }
 
@@ -39,7 +39,7 @@ public class AccountDao {
     public Account getAccountByAccountID(int clientId, int id) throws SQLException {
 
         try (Connection con = ConnectionUtility.getConnection()) {
-            String sql = "SELECT * FROM accounts WHERE clientId = ? AND id = ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND account_number = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -52,7 +52,7 @@ public class AccountDao {
                 double balance = rs.getDouble("balance");
                 int accountNumber = rs.getInt("account_number");
 
-                return new Account(id, accountType, balance, clientId, accountNumber);
+                return new Account(accountType, balance, clientId, accountNumber);
             }
         }
         return null;
@@ -62,7 +62,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE clientId = ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -70,12 +70,11 @@ public class AccountDao {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
-                int id = rs.getInt("id");
                 String accountType = rs.getString("account_type");
                 double balance = rs.getDouble("balance");
                 int accountNumber = rs.getInt("account_number");
 
-                accounts.add(new Account(id, accountType, balance, clientId, accountNumber));
+                accounts.add(new Account(accountType, balance, clientId, accountNumber));
             }
             return accounts;
         }
@@ -87,17 +86,19 @@ public class AccountDao {
             String sql = "SELECT * FROM accounts WHERE client_id = ? AND account_type = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
-            ResultSet rs = pstmt.executeQuery();
+
 
             pstmt.setInt(1, clientId);
             pstmt.setString(2, accountType);
+
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
                 int id = rs.getInt("id");
                 double balance = rs.getDouble("balance");
                 int accountNumber = rs.getInt("account_number");
 
-                accounts.add(new Account(id, accountType, balance, clientId, accountNumber));
+                accounts.add(new Account(accountType, balance, clientId, accountNumber));
             }
             return accounts;
         }
@@ -107,7 +108,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE clientId = ? AND balance <= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance <= ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -121,7 +122,7 @@ public class AccountDao {
                 double balance = rs.getDouble("balance");
                 int accountNumber = rs.getInt("account_number");
 
-                accounts.add(new Account(id, accountType, balance, clientId, accountNumber));
+                accounts.add(new Account(accountType, balance, clientId, accountNumber));
             }
             return accounts;
         }
@@ -131,7 +132,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE clientId = ? AND balance >= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance >= ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -140,12 +141,11 @@ public class AccountDao {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
-                int id = rs.getInt("id");
                 String accountType = rs.getString("account_type");
                 double balance = rs.getDouble("balance");
                 int accountNumber = rs.getInt("account_number");
 
-                accounts.add(new Account(id, accountType, balance, clientId, accountNumber));
+                accounts.add(new Account(accountType, balance, clientId, accountNumber));
             }
             return accounts;
         }
@@ -155,7 +155,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE clientId = ? AND balance <= ? AND balance >= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance <= ? AND balance >= ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -165,12 +165,11 @@ public class AccountDao {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
-                int id = rs.getInt("id");
                 String accountType = rs.getString("account_type");
                 double balance = rs.getDouble("balance");
                 int accountNumber = rs.getInt("account_number");
 
-                accounts.add(new Account(id, accountType, balance, clientId, accountNumber));
+                accounts.add(new Account(accountType, balance, clientId, accountNumber));
             }
             return accounts;
         }
@@ -187,7 +186,6 @@ public class AccountDao {
             pstmt.setDouble(2, account.getBalance());
             pstmt.setInt(3, account.getAccountNumber());
             pstmt.setInt(4, account.getClientId());
-            pstmt.setInt(5, account.getId());
 
             pstmt.executeUpdate();
         }
@@ -200,7 +198,7 @@ public class AccountDao {
 
     public boolean deleteAccountById(int clientId, int accountId) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
-            String sql = "DELETE FROM accounts WHERE id = ? AND client_id = ?";
+            String sql = "DELETE FROM accounts WHERE account_number = ? AND client_id = ?";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 

@@ -3,7 +3,6 @@ package com.revature.model;
 import java.util.Objects;
 
 public class Account {
-    private int id;
     private String accountType;
     private Double balance;
     private int clientId;
@@ -13,20 +12,11 @@ public class Account {
 
     }
 
-    public Account(int id, String accountType, double balance, int clientId, int accountNumber) {
-        this.id = id;
+    public Account(String accountType, double balance, int clientId, int accountNumber) {
         this.accountType = accountType;
         this.balance = balance;
         this.clientId = clientId;
         this.accountNumber = accountNumber;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getAccountType() {
@@ -37,7 +27,7 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public double getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
@@ -53,34 +43,32 @@ public class Account {
         this.clientId = clientId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
-        return id == account.id && clientId == account.clientId && Objects.equals(accountType, account.accountType) && Objects.equals(balance, account.balance);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, accountType, balance, clientId);
-    }
-
-    @Override
-    public String toString() {
-        return "Account{" +
-                "id=" + id +
-                ", accountType='" + accountType + '\'' +
-                ", balance=" + balance +
-                ", clientId=" + clientId +
-                '}';
-    }
-
     public int getAccountNumber() {
         return accountNumber;
     }
 
     public void setAccountNumber(int accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "accountType='" + accountType + '\'' +
+                ", balance=" + balance +
+                "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(accountType, account.accountType) && Objects.equals(balance, account.balance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountType, balance, clientId, accountNumber);
     }
 }

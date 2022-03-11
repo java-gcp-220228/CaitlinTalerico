@@ -33,6 +33,13 @@ public class ExceptionController implements Controller{
         ctx.json(e.getMessage());
     };
 
+    private ExceptionHandler noDataProvidedClient = (e, ctx) -> {
+        logger.warn("User did not provide proper request body.\n" +
+                "Exception message: " + e.getMessage());
+        ctx.status(400);
+
+    };
+
 
     @Override
     public void mapEndpoints(Javalin app) {
