@@ -1,6 +1,6 @@
 package com.revature.controller;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
 import com.revature.model.Client;
 import com.revature.response.ResponseBody;
 import com.revature.service.ClientService;
@@ -19,20 +19,21 @@ public class ClientController implements Controller{
         this.clientService = new ClientService();
     }
 
-    private Handler getAllClients = (ctx) -> {
+    private final Handler getAllClients = (ctx) -> {
         List<Client> clients = clientService.getAllClients();
 
         ctx.status(200);
         ctx.json(clients);
     };
 
-    private Handler getClientById = (ctx) -> {
+    private final Handler getClientById = (ctx) -> {
         String id = ctx.pathParam("clientId");
         Client client = clientService.getClientByID(id);
+        ctx.status(200);
         ctx.json(client);
     };
 
-    private Handler addClient = (ctx) -> {
+    private final Handler addClient = (ctx) -> {
         System.out.println(ctx.body());
         try {
             Client clientToAdd = ctx.bodyAsClass(Client.class);
@@ -52,7 +53,7 @@ public class ClientController implements Controller{
 
     };
 
-    private Handler updateClient = (ctx) -> {
+    private final Handler updateClient = (ctx) -> {
         Client clientToEdit = ctx.bodyAsClass(Client.class);
 
         Client editedClient = clientService.updateClient(ctx.pathParam("clientId"), clientToEdit);
@@ -61,7 +62,7 @@ public class ClientController implements Controller{
         ctx.json(editedClient);
     };
 
-    private Handler deleteClient = (ctx) -> {
+    private final Handler deleteClient = (ctx) -> {
         String id = ctx.pathParam("clientId");
 
         ResponseBody responseBody = ResponseBody.deleteClient(clientService.deleteClient(id));
@@ -71,9 +72,14 @@ public class ClientController implements Controller{
 
     };
 
-    private Handler notValidMethod = (ctx) -> {
+    private final Handler notValidRequest = (ctx) -> {
         ctx.status(405);
         ctx.result(ctx.method() + " requests are not allowed.");
+    };
+
+    private final Handler receiveOptions = (ctx) -> {
+        ctx.status(200);
+        ctx.result("Allowed: GET, POST, PUT, DELETE");
     };
 
 
@@ -84,7 +90,9 @@ public class ClientController implements Controller{
         app.post("/clients", addClient);
         app.put("/clients/{clientId}", updateClient);
         app.delete("/clients/{clientId}", deleteClient);
-        app.patch("/*", notValidMethod);
+        app.patch("/*", notValidRequest);
+        app.head("/*", notValidRequest);
+        app.options("/*", receiveOptions);
 
 
     }

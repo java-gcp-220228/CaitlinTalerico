@@ -67,8 +67,8 @@ public class ClientDao {
             while (rs.next()) {
 
                 int clientId = rs.getInt("id");
-                String firstName = rs.getString("firstname");
-                String lastName = rs.getString("lastname");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
                 int age = rs.getInt("age");
 
                 clients.add(new Client(clientId, firstName, lastName, age));

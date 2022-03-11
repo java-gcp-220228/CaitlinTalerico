@@ -179,20 +179,20 @@ public class AccountDao {
     // U-UPDATE
     public Account updateAccount(Account account) throws SQLException {
         try(Connection con = ConnectionUtility.getConnection()) {
-            String sql = "UPDATE accounts SET account_type = ?, balance = ? WHERE client_id = ? AND id = ?";
+            String sql = "UPDATE accounts SET account_type = ?, balance = ?, account_number = ? WHERE client_id = ? AND account_number = ?";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, account.getAccountType());
             pstmt.setDouble(2, account.getBalance());
-            pstmt.setInt(3, account.getClientId());
-            pstmt.setInt(4, account.getId());
+            pstmt.setInt(3, account.getAccountNumber());
+            pstmt.setInt(4, account.getClientId());
+            pstmt.setInt(5, account.getId());
 
             pstmt.executeUpdate();
         }
 
         return account;
-
     }
 
 

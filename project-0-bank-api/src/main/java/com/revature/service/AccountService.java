@@ -39,17 +39,50 @@ public class AccountService {
         return accountDao.getAllAccounts(cId);
     }
 
-    public Account updateAccount(Account account) throws SQLException {
+    public List<Account> getAllAccounts(String clientId, String minAmount, String maxAmount) throws SQLException {
+        int cId = validateIdAndReturnInt(clientId);
+        double minBalance = validateLong(minAmount);
+        double maxBalance = validateLong(maxAmount);
 
+        return accountDao.getAccountsBetween(cId, minBalance, maxBalance);
+    }
+
+    public List<Account> getAllAccountsLessThan(String clientId, String maxAmount) throws SQLException {
+        int cId = validateIdAndReturnInt(clientId);
+        double maxBalance = validateLong(maxAmount);
+        return accountDao.getAccountsLessThan(cId, maxBalance);
+    }
+
+    public List<Account> getAllAccountsGreaterThan(String clientId, String minAmount) throws SQLException {
+        int cId = validateIdAndReturnInt(clientId);
+        double minBalance = validateLong(minAmount);
+        return accountDao.getAccountsGreaterThan(cId, minBalance);
+    }
+
+    public List<Account> getAllAccountsByType(String clientId, String type) throws SQLException {
+        int cId = validateIdAndReturnInt(clientId);
+        return accountDao.getAccountsByType(cId, type);
+    }
+
+    public Account updateAccount(String clientId, String accountId, Account account) throws SQLException {
+
+        int cId = validateIdAndReturnInt(clientId);
+        int accId = validateIdAndReturnInt(accountId);
+
+        account.setClientId(cId);
+        account.setAccountNumber(accId);
         validateAccountInformation(account);
 
         Account updatedAccount = accountDao.updateAccount(account);
         return updatedAccount;
     }
 
-    public Account createAccount(Account account) throws SQLException {
+    public Account createAccount(String clientId, Account account) throws SQLException {
 
+        int cId = validateIdAndReturnInt(clientId);
+        account.setClientId(cId);
         validateAccountInformation(account);
+        account.setAccountNumber(accountDao.getAllAccounts(account.getClientId()).size() + 1);
         Account addedAccount = accountDao.createAccount(account);
 
         return addedAccount;
@@ -57,9 +90,19 @@ public class AccountService {
 
     public boolean deleteAccount(String clientId, String id) throws SQLException {
         int cId = validateIdAndReturnInt(clientId);
-        int accountId = validateIdAndReturnInt(id);
+        int accountNumber = validateIdAndReturnInt(id);
 
-        return accountDao.deleteAccountById(cId, accountId);
+        boolean success = accountDao.deleteAccountById(cId, accountNumber);
+        int currentAccount = accountNumber + 1;
+        Account updateAccount = accountDao.getAccountByAccountID(cId, currentAccount);
+        while(updateAccount != null) {
+            updateAccount.setAccountNumber(currentAccount - 1);
+            accountDao.updateAccount(updateAccount);
+            currentAccount++;
+            updateAccount = accountDao.getAccountByAccountID(cId, currentAccount);
+        }
+
+        return success;
     }
 
     public void validateAccountInformation(Account account) {
@@ -88,6 +131,16 @@ public class AccountService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("A valid number was not provided for the ID.\n" +
                     "Input: " + id);
+        }
+    }
+
+    public double validateLong(String value) {
+        try {
+            double doubleValue = Double.parseDouble(value);
+            return doubleValue;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("A valid balance was not provided for the ID.\n" +
+                    "Input: " + value);
         }
     }
 }

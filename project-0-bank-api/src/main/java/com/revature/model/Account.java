@@ -7,13 +7,13 @@ public class Account {
     private String accountType;
     private Double balance;
     private int clientId;
-    private long accountNumber;
+    private int accountNumber;
 
     public Account() {
 
     }
 
-    public Account(int id, String accountType, double balance, int clientId, long accountNumber) {
+    public Account(int id, String accountType, double balance, int clientId, int accountNumber) {
         this.id = id;
         this.accountType = accountType;
         this.balance = balance;
@@ -76,11 +76,11 @@ public class Account {
                 '}';
     }
 
-    public long getAccountNumber() {
+    public int getAccountNumber() {
         return accountNumber;
     }
 
-    public void setAccountNumber(long accountNumber) {
+    public void setAccountNumber(int accountNumber) {
         this.accountNumber = accountNumber;
     }
 }
