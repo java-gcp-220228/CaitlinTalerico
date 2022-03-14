@@ -35,21 +35,11 @@ public class ClientController implements Controller{
 
     private final Handler addClient = (ctx) -> {
         System.out.println(ctx.body());
-        try {
-            Client clientToAdd = ctx.bodyAsClass(Client.class);
+        Client clientToAdd = ctx.bodyAsClass(Client.class);
 
-            Client newClient = clientService.addClient(clientToAdd);
-            ctx.status(201);
-            ctx.json(newClient);
-        } catch (PSQLException e) {
-            ctx.status(400);
-            ctx.result("Invalid body sent. Body should be structure as below: \n" +
-                    "{" +
-                    "firstName: ''," +
-                    "lastName: ''," +
-                    "age: ''" +
-                    "}");
-        }
+        Client newClient = clientService.addClient(clientToAdd);
+        ctx.status(201);
+        ctx.json(newClient);
 
     };
 
@@ -74,7 +64,7 @@ public class ClientController implements Controller{
 
     private final Handler notValidRequest = (ctx) -> {
         ctx.status(405);
-        ctx.result(ctx.method() + " requests are not allowed.");
+        ctx.result(ctx.method() + " requests are not allowed for path: " + ctx.path());
     };
 
     private final Handler receiveOptions = (ctx) -> {
@@ -90,6 +80,7 @@ public class ClientController implements Controller{
         app.post("/clients", addClient);
         app.put("/clients/{clientId}", updateClient);
         app.delete("/clients/{clientId}", deleteClient);
+        app.put("/clients", notValidRequest);
         app.patch("/*", notValidRequest);
         app.head("/*", notValidRequest);
         app.options("/*", receiveOptions);

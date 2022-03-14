@@ -57,10 +57,10 @@ public class ClientService {
         validateClientInformation(client);
         try {
             int clientId = Integer.parseInt(id);
+            client.setId(clientId);
             if (clientDao.getClientById(clientId) == null) {
                 throw new ClientNotFoundException("Client with id " + id + " does not exist. Unable to edit this client.");
             }
-            client.setId(clientId);
             return clientDao.updateClient(client);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("A valid number was not given for the client ID. \nInput: " + id);
@@ -91,7 +91,7 @@ public class ClientService {
         }
 
         if (!client.getLastName().matches("[a-zA-Z]+('[a-zA-Z])?[a-zA-Z]*")) {
-            throw new IllegalArgumentException("Last name must only have alphabetical characters. \nInput: " + client.getLastName());
+            throw new IllegalArgumentException("Last name must only have alphabetical characters.\nInput: " + client.getLastName());
         }
 
         if (client.getAge() < 18) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +66,19 @@ public class ClientServiceTest {
 
         Assertions.assertThrows(ClientNotFoundException.class, () ->{
             clientService.getClientByID("10");
+        });
+    }
+
+    // Negative
+    @Test
+    public void test_getClient_throwsSqlException() throws SQLException {
+        ClientDao mockDao = mock(ClientDao.class);
+        when(mockDao.getClientById(anyInt())).thenThrow(SQLException.class);
+
+        ClientService clientService = new ClientService(mockDao);
+
+        Assertions.assertThrows(SQLException.class, () -> {
+            clientService.getClientByID("1");
         });
     }
 
@@ -154,6 +167,77 @@ public class ClientServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             clientService.addClient(mockClient);
         });
+    }
+
+    //Positive
+    @Test
+    public void test_updateClient_ChangeId() throws SQLException {
+        ClientDao mockDao = mock(ClientDao.class);
+        Client mockClient = new Client(2, "John", "Smith", 23);
+
+        when(mockDao.updateClient(mockClient)).thenReturn(mockClient);
+        when(mockDao.getClientById(anyInt())).thenReturn(mockClient);
+        ClientService clientService = new ClientService(mockDao);
+
+        Assertions.assertDoesNotThrow(()->{
+            Client actualClient = clientService.updateClient("1", mockClient);
+            // Assert that the id was indeed changed
+            Assertions.assertEquals(1, actualClient.getId());
+        });
+
+    }
+    //Positive
+    @Test
+    public void test_updateClient_ChangeFirstName() throws SQLException {
+        ClientDao mockDao = mock(ClientDao.class);
+        Client mockClient = new Client(2, "John", "Smith", 23);
+        Client updatedClient = new Client(2, "Jane", "Smith", 23);
+
+        when(mockDao.updateClient(updatedClient)).thenReturn(updatedClient);
+        when(mockDao.getClientById(anyInt())).thenReturn(mockClient);
+        ClientService clientService = new ClientService(mockDao);
+
+        Assertions.assertDoesNotThrow(()->{
+            Client actualClient = clientService.updateClient("2", updatedClient);
+            // Assert that the id was indeed changed
+            Assertions.assertEquals(updatedClient.getFirstName(), actualClient.getFirstName());
+        });
+    }
+
+    // Negative
+    @Test
+    public void test_updateClient_InvalidFirstName() throws SQLException, ClientNotFoundException {
+        ClientDao mockDao = mock(ClientDao.class);
+        Client updatedClient = new Client(2, "Jane123", "Smith", 23);
+
+        when(mockDao.getClientById(anyInt())).thenReturn(new Client());
+        ClientService clientService = new ClientService(mockDao);
+
+        try {
+            clientService.updateClient("2", updatedClient);
+        } catch (IllegalArgumentException e) {
+            String expectedMessage = "First name must only have alphabetical characters.\nInput: " + updatedClient.getFirstName();
+            String actualMessage = e.getMessage();
+            Assertions.assertEquals(expectedMessage, actualMessage);
+        }
+    }
+
+    // Negative
+    @Test
+    public void test_updateClient_InvalidLastName() throws SQLException, ClientNotFoundException {
+        ClientDao mockDao = mock(ClientDao.class);
+        Client updatedClient = new Client(2, "Jane", "Smith_", 23);
+
+        when(mockDao.getClientById(anyInt())).thenReturn(new Client());
+        ClientService clientService = new ClientService(mockDao);
+
+        try {
+            clientService.updateClient("2", updatedClient);
+        } catch (IllegalArgumentException e) {
+            String expectedMessage = "Last name must only have alphabetical characters.\nInput: " + updatedClient.getLastName();
+            String actualMessage = e.getMessage();
+            Assertions.assertEquals(expectedMessage, actualMessage);
+        }
     }
 
     // Positive

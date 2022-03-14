@@ -4,12 +4,19 @@ import java.util.Objects;
 
 public class Account {
     private String accountType;
-    private Double balance;
+    private double balance;
     private int clientId;
     private int accountNumber;
 
     public Account() {
 
+    }
+    public Account(String accountType) {
+        this.accountType = accountType;
+    }
+    public Account(String accountType, double balance) {
+        this.accountType = accountType;
+        this.balance = balance;
     }
 
     public Account(String accountType, double balance, int clientId, int accountNumber) {

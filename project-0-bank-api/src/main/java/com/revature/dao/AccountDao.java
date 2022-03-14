@@ -15,13 +15,17 @@ public class AccountDao {
 
     public Account createAccount(Account account) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
-            String sql = "INSERT INTO accounts (account_type, balance, client_id) VALUES (?, ?, ?)";
+
+            account.setAccountNumber(new AccountDao().getAllAccounts(account.getClientId()).size() + 1);
+
+            String sql = "INSERT INTO accounts (account_type, balance, client_id, account_number) VALUES (?, ?, ?, ?)";
 
             PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             pstmt.setString(1, account.getAccountType());
             pstmt.setDouble(2, account.getBalance());
             pstmt.setInt(3, account.getClientId());
+            pstmt.setInt(4, account.getAccountNumber());
 
             pstmt.executeUpdate();
 
@@ -66,7 +70,7 @@ public class AccountDao {
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
-
+            con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
@@ -89,8 +93,7 @@ public class AccountDao {
 
 
             pstmt.setInt(1, clientId);
-            pstmt.setString(2, accountType);
-
+            pstmt.setString(2, (accountType.substring(0,1).toUpperCase() + accountType.substring(1).toLowerCase()));
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
@@ -155,7 +158,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance <= ? AND balance >= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance >=? AND balance <= ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -176,23 +179,44 @@ public class AccountDao {
     }
 
     // U-UPDATE
-    public Account updateAccount(Account account) throws SQLException {
+    public Account updateAccount(Account account, int accNum) throws SQLException {
         try(Connection con = ConnectionUtility.getConnection()) {
-            String sql = "UPDATE accounts SET account_type = ?, balance = ?, account_number = ? WHERE client_id = ? AND account_number = ?";
+            con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 
+            String sql = "UPDATE accounts SET account_type = ?, balance = ?, account_number = ? WHERE client_id = ? AND account_number = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, account.getAccountType());
             pstmt.setDouble(2, account.getBalance());
             pstmt.setInt(3, account.getAccountNumber());
             pstmt.setInt(4, account.getClientId());
+            pstmt.setInt(5, accNum);
 
             pstmt.executeUpdate();
         }
 
         return account;
     }
+    public Account updateAccount(int clientId, int accountId, Account account) throws SQLException {
+        try(Connection con = ConnectionUtility.getConnection()) {
+            con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 
+            String sql = "UPDATE accounts SET account_type = ?, balance = ?, account_number = ?, client_id = ? WHERE client_id = ? AND account_number = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, account.getAccountType());
+            pstmt.setDouble(2, account.getBalance());
+            pstmt.setInt(3, account.getAccountNumber());
+            pstmt.setInt(4, account.getClientId());
+            pstmt.setInt(5, clientId);
+            pstmt.setInt(6, accountId);
+
+
+            pstmt.executeUpdate();
+        }
+
+        return account;
+    }
 
     // D-DELETE
 
