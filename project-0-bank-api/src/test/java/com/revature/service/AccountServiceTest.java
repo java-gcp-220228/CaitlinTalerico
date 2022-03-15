@@ -47,29 +47,79 @@ public class AccountServiceTest {
     }
 
 
-    // Positive
-    @Disabled
+    //Positive
+
     @Test
-    public void test_updateAccount_And_ClientId_ForAccount() throws SQLException, ClientNotFoundException, AccountNotFoundException {
-        Account mockAccount = new Account("Savings", 100, 1, 1);
+    public void test_updateAccount() throws SQLException, ClientNotFoundException, AccountNotFoundException {
+        Account mockAccount = new Account("Savings", 100, 1, 0);
+        // Expected to return this account
+        Account expectedAccount = new Account("Savings", 100, 1, 1);
 
-        when(mockAccountDao.getAllAccounts(anyInt())).thenReturn(new ArrayList<>());
+        // When method goes to verify account and client
         when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
-        when(mockAccountDao.getAccountByAccountID(2, 1)).thenReturn(new Account());
-        when(mockAccountDao.getAccountByAccountID(0, 0)).thenReturn(null);
+        when(mockAccountDao.getAccountByAccountID(1, 0)).thenReturn(new Account());
 
-        when(mockAccountDao.updateAccount(any(Account.class), anyInt())).thenReturn(new Account());
-        when(mockAccountDao.updateAccount(anyInt(), anyInt(), any(Account.class))).thenReturn(mockAccount);
-        Account actualAccount = accountService.updateAccount("2", "1", mockAccount);
+        // When method goes to update the account number (based on how many accounts already there
+        when(mockAccountDao.getAllAccounts(anyInt())).thenReturn(new ArrayList<>());
+
+        // Get the updated Account
+        when(mockAccountDao.updateAccount(anyInt(), anyInt(), any(Account.class))).thenReturn(expectedAccount);
+
+
+        when(mockAccountDao.getAccountByAccountID(1, 1)).thenReturn(null);
+        Account actualAccount = accountService.updateAccount("1", "0", mockAccount);
+
+        // Check that each of the values in the returned account are equal to expected values
+
+        Assertions.assertEquals(expectedAccount.getAccountType(), actualAccount.getAccountType());
+        Assertions.assertEquals(expectedAccount.getBalance(), actualAccount.getBalance());
+        Assertions.assertEquals(expectedAccount.getClientId(), actualAccount.getClientId());
+        Assertions.assertEquals(expectedAccount.getClientId(), actualAccount.getAccountNumber());
+
+    }
+    // Positive
+    @Test
+    public void test_partial_Update_Account() throws SQLException, ClientNotFoundException, AccountNotFoundException {
+        Account mockAccount = new Account();
+        mockAccount.setAccountType("Savings");
+
+
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+        when(mockAccountDao.getAccountByAccountID(anyInt(), anyInt())).thenReturn(new Account());
+
+
+        when(mockAccountDao.updateAccount(any(Account.class), anyInt())).thenReturn(new Account("Savings", 100, 2, 1));
+        Account actualAccount = accountService.partialUpdateAccount("2", "1", mockAccount);
 
         // Check that each of the values in the returned account are equal to expected values
         Assertions.assertEquals(mockAccount.getAccountType(), actualAccount.getAccountType());
-        Assertions.assertEquals(mockAccount.getBalance(), actualAccount.getBalance());
-        Assertions.assertEquals(1, actualAccount.getClientId());
+        Assertions.assertEquals(100, actualAccount.getBalance());
+        Assertions.assertEquals(2, actualAccount.getClientId());
         Assertions.assertEquals(1, actualAccount.getAccountNumber());
 
     }
 
+    // Positive
+    @Test
+    public void test_partial_Update_Account_Change_Balance() throws SQLException, ClientNotFoundException, AccountNotFoundException {
+        Account mockAccount = new Account();
+        mockAccount.setAccountType("Savings");
+        mockAccount.setBalance(200.00);
+
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+        when(mockAccountDao.getAccountByAccountID(anyInt(), anyInt())).thenReturn(new Account());
+
+
+        when(mockAccountDao.updateAccount(any(Account.class), anyInt())).thenReturn(new Account("Savings", 100, 2, 1));
+        Account actualAccount = accountService.partialUpdateAccountChangeBalance("2", "1", mockAccount);
+
+        // Check that each of the values in the returned account are equal to expected values
+        Assertions.assertEquals(mockAccount.getAccountType(), actualAccount.getAccountType());
+        Assertions.assertEquals(100, actualAccount.getBalance());
+        Assertions.assertEquals(2, actualAccount.getClientId());
+        Assertions.assertEquals(1, actualAccount.getAccountNumber());
+
+    }
     // Positive
     @Test
     public void test_getAccountByID() throws SQLException, ClientNotFoundException, AccountNotFoundException {
@@ -126,6 +176,85 @@ public class AccountServiceTest {
         Assertions.assertEquals(mockAccounts.size(), actualAccounts.size());
     }
 
+    // Positive
+    @Test
+    public void test_getAllAccountsLessThanValue() throws SQLException, ClientNotFoundException {
+        List<Account> mockAccounts = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            mockAccounts.add(new Account());
+        }
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+        when(mockAccountDao.getAccountsLessThan(eq(1), eq(100.00))).thenReturn(mockAccounts);
+
+        List<Account> actualAccounts = accountService.getAllAccountsLessThan("1", "100.00");
+
+        Assertions.assertEquals(mockAccounts.size(), actualAccounts.size());
+    }
+
+    // Positive
+    @Test
+    public void test_getAllAccountsGreaterThanValue() throws SQLException, ClientNotFoundException {
+        List<Account> mockAccounts = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            mockAccounts.add(new Account());
+        }
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+        when(mockAccountDao.getAccountsGreaterThan(eq(1), eq(100.00))).thenReturn(mockAccounts);
+
+        List<Account> actualAccounts = accountService.getAllAccountsGreaterThan("1", "100.00");
+
+        Assertions.assertEquals(mockAccounts.size(), actualAccounts.size());
+    }
+
+    // Positive
+    @Test
+    public void test_getAllAccountsBetween() throws SQLException, ClientNotFoundException {
+        List<Account> mockAccounts = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            mockAccounts.add(new Account());
+        }
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+        when(mockAccountDao.getAccountsBetween(eq(1), eq(100.00), eq(500.00))).thenReturn(mockAccounts);
+
+        List<Account> actualAccounts = accountService.getAllAccounts("1", "100.00", "500.00");
+
+        Assertions.assertEquals(mockAccounts.size(), actualAccounts.size());
+    }
+
+    // Positive
+    @Test
+    public void test_getAllAccountsByType() throws SQLException, ClientNotFoundException {
+        List<Account> mockAccounts = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            mockAccounts.add(new Account());
+        }
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+        when(mockAccountDao.getAccountsByType(eq(1), eq("Savings"))).thenReturn(mockAccounts);
+
+        List<Account> actualAccounts = accountService.getAllAccountsByType("1", "Savings");
+
+        Assertions.assertEquals(mockAccounts.size(), actualAccounts.size());
+    }
+
+    // Negative
+    @Test
+    public void test_getAllAccountsLessThanInvalidBalance() throws SQLException, ClientNotFoundException {
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+
+
+        Assertions.assertThrows(IllegalArgumentException.class, ()->{
+            accountService.getAllAccountsGreaterThan("1", "abc");
+        });
+    }
+
+    // Negative
+    @Test
+    public void test_getAllAccountsLessThanInvalidClientId() throws SQLException, ClientNotFoundException {
+        Assertions.assertThrows(IllegalArgumentException.class, ()->{
+            accountService.getAllAccountsGreaterThan("abc", "100");
+        });
+    }
+
     // Negative
     @Test
     public void test_getAllAccounts_NoAccounts_ReturnEmptyList() throws SQLException {
@@ -140,27 +269,7 @@ public class AccountServiceTest {
 
 
 
-    //Positive
-    @Test
-    public void test_updateAccount_NoChangeInClient() throws SQLException, ClientNotFoundException, AccountNotFoundException {
-        Account mockAccount = new Account("Savings", 100, 1, 0);
 
-        Account expectedAccount = new Account("Savings", 100, 1, 1);
-        when(mockAccountDao.getAllAccounts(anyInt())).thenReturn(new ArrayList<>());
-        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
-
-        when(mockAccountDao.getAccountByAccountID(anyInt(), anyInt())).thenReturn(new Account());
-        when(mockAccountDao.updateAccount(any(Account.class), anyInt())).thenReturn(expectedAccount);
-        Account actualAccount = accountService.updateAccount("1", "1", mockAccount);
-
-        // Check that each of the values in the returned account are equal to expected values
-
-        Assertions.assertEquals(expectedAccount.getAccountType(), actualAccount.getAccountType());
-        Assertions.assertEquals(expectedAccount.getBalance(), actualAccount.getBalance());
-        Assertions.assertEquals(expectedAccount.getClientId(), actualAccount.getClientId());
-        Assertions.assertEquals(expectedAccount.getClientId(), actualAccount.getAccountNumber());
-
-    }
 
     //Negative
     @Test
@@ -173,10 +282,20 @@ public class AccountServiceTest {
         });
 
     }
+    //Negative
+    @Test
+    public void test_updateAccount_Client_Does_Not_Exist() throws SQLException, ClientNotFoundException, AccountNotFoundException {
+        when(mockClientDao.getClientById(anyInt())).thenReturn(null);
+
+        Assertions.assertThrows(ClientNotFoundException.class, ()->{
+            accountService.updateAccount("1", "1", new Account("Savings"));
+        });
+
+    }
 
     // Positive
     @Test
-    public void test_createAccount() throws SQLException, ClientNotFoundException {
+    public void test_createAccountSavings() throws SQLException, ClientNotFoundException {
         when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
 
         when(mockAccountDao.createAccount(any(Account.class))).thenReturn(new Account("Savings", 200, 1, 0));
@@ -193,10 +312,36 @@ public class AccountServiceTest {
     public void test_createAccount_LowerCaseSpelling() throws SQLException, ClientNotFoundException {
         when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
 
-        when(mockAccountDao.createAccount(any(Account.class))).thenReturn(new Account("Savings", 200, 1, 0));
+        when(mockAccountDao.createAccount(any(Account.class))).thenReturn(new Account("Checking", 200, 1, 0));
 
-        Account expected = new Account("Savings", 200,1,0);
-        Account actual = accountService.createAccount("0", new Account("savings", 200));
+        Account expected = new Account("Checking", 200,1,0);
+        Account actual = accountService.createAccount("0", new Account("checking", 200));
+
+        Assertions.assertEquals(expected, actual);
+
+    }
+    // Positive
+    @Test
+    public void test_createAccount_MMA() throws SQLException, ClientNotFoundException {
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+
+        when(mockAccountDao.createAccount(any(Account.class))).thenReturn(new Account("MMA", 200, 1, 0));
+
+        Account expected = new Account("MMA", 200,1,0);
+        Account actual = accountService.createAccount("0", new Account("mMa", 200));
+
+        Assertions.assertEquals(expected, actual);
+
+    }
+    // Positive
+    @Test
+    public void test_createAccount_CD() throws SQLException, ClientNotFoundException {
+        when(mockClientDao.getClientById(anyInt())).thenReturn(new Client());
+
+        when(mockAccountDao.createAccount(any(Account.class))).thenReturn(new Account("CD", 200, 1, 0));
+
+        Account expected = new Account("CD", 200,1,0);
+        Account actual = accountService.createAccount("0", new Account("cd", 200));
 
         Assertions.assertEquals(expected, actual);
 

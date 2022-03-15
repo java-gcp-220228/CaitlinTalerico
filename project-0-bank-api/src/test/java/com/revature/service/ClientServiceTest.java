@@ -240,6 +240,37 @@ public class ClientServiceTest {
         }
     }
 
+    // Negative
+    @Test
+    public void test_updateClient_NoClientExists() throws SQLException {
+        ClientDao mockedObject = mock(ClientDao.class);
+        Client updateClient = new Client(1, "Jane", "Smith", 23);
+
+        when(mockedObject.getClientById(eq(1))).thenReturn(null);
+
+        ClientService clientService = new ClientService(mockedObject);
+        Assertions.assertThrows(ClientNotFoundException.class, ()->{
+            clientService.updateClient("1", updateClient);
+        });
+
+    }
+
+    // Negative
+    @Test
+    public void test_updateClient_IllegalArgumentException() throws SQLException {
+        ClientDao mockedObject = mock(ClientDao.class);
+        Client updateClient = new Client(1, "Jane", "Smith", 23);
+
+        when(mockedObject.getClientById(eq(1))).thenReturn(new Client());
+
+        ClientService clientService = new ClientService(mockedObject);
+        Assertions.assertThrows(IllegalArgumentException.class, ()->{
+            clientService.updateClient("1ab", updateClient);
+        });
+
+    }
+
+
     // Positive
     @Test
     public void test_deleteClient() throws SQLException, ClientNotFoundException {
@@ -276,5 +307,19 @@ public class ClientServiceTest {
         ClientService clientService = new ClientService(mockedObject);
         Assertions.assertThrows(IllegalArgumentException.class, () -> { clientService.deleteClient("abc");
         });
+    }
+
+    // Negative
+    @Test
+    public void test_deleteClient_NoClientExists() throws SQLException {
+        ClientDao mockedObject = mock(ClientDao.class);
+
+        when(mockedObject.getClientById(eq(1))).thenReturn(null);
+
+        ClientService clientService = new ClientService(mockedObject);
+        Assertions.assertThrows(ClientNotFoundException.class, ()->{
+            clientService.deleteClient("1");
+        });
+
     }
 }
