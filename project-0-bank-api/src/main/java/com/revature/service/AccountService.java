@@ -83,37 +83,65 @@ public class AccountService {
 
         // Validate account information follows database standards
         validateAccountInformation(account);
-
-        // If changing the client id of the account
-        if (account.getClientId() != cId) {
-            verifyClientExists(account.getClientId());
+        verifyClientExists(account.getClientId());
             // Will update the numbering of the other client's accounts
-            int currentAccount = accId + 1; // Account updating + 1
-            // This will update the account switching clients to follow client's numbering
-            account.setAccountNumber(accountDao.getAllAccounts(account.getClientId()).size() + 1);
-
+        int currentAccount = accId + 1; // Account updating + 1
+        // This will update the account switching clients to follow client's numbering
+        account.setAccountNumber(accountDao.getAllAccounts(account.getClientId()).size() + 1);
             // This is the returned, updated account (Overloaded method)
-            Account updatedAccount = accountDao.updateAccount(cId, accId, account);
+        Account updatedAccount = accountDao.updateAccount(cId, accId, account);
 
             // The account from the other client whose numbering must be change
-            Account changeAccountOtherClient = accountDao.getAccountByAccountID(cId, currentAccount);
-            while(changeAccountOtherClient != null) {
+        Account changeAccountOtherClient = accountDao.getAccountByAccountID(cId, currentAccount);
+        while(changeAccountOtherClient != null) {
                 // Set the account number to previous accounts number
-                changeAccountOtherClient.setAccountNumber(currentAccount-1);
+            changeAccountOtherClient.setAccountNumber(currentAccount-1);
                 // Update account with new number
-                accountDao.updateAccount(changeAccountOtherClient, currentAccount);
+            accountDao.updateAccount(changeAccountOtherClient, currentAccount);
                 // Move onto the next account
-                currentAccount++;
-                changeAccountOtherClient = accountDao.getAccountByAccountID(cId, currentAccount);
-            }
-            return updatedAccount;
+            currentAccount++;
+            changeAccountOtherClient = accountDao.getAccountByAccountID(cId, currentAccount);
         }
-        // If not changing the client, simply update the account
+        return updatedAccount;
+
+
+
+
+    }
+
+    // Patch requests
+    public Account partialUpdateAccount(String clientId, String accountId, Account account) throws ClientNotFoundException, SQLException, AccountNotFoundException {
+        // Validate client information: Does the client actually exist
+        int cId = validateIdAndReturnInt(clientId);
+        verifyClientExists(cId);
+        // Validate that the account we are updating exists, otherwise shouldn't attempt to do so
+        int accId = validateIdAndReturnInt(accountId);
+        Account accountToEdit = verifyAccountExist(cId, accId);
+
+        // Validate account information follows database standards
+        validateAccountInformation(account);
+        account.setAccountNumber(accId);
+        account.setClientId(cId);
+        account.setBalance(accountToEdit.getBalance());
+        return accountDao.updateAccount(account, accId);
+    }
+
+    // Patch requests
+    public Account partialUpdateAccountChangeBalance(String clientId, String accountId, Account account) throws ClientNotFoundException, SQLException, AccountNotFoundException {
+        // Validate client information: Does the client actually exist
+        int cId = validateIdAndReturnInt(clientId);
+        verifyClientExists(cId);
+        // Validate that the account we are updating exists, otherwise shouldn't attempt to do so
+        int accId = validateIdAndReturnInt(accountId);
+        verifyAccountExist(cId, accId);
+
+        // Validate account information follows database standards
+        validateAccountInformation(account);
         account.setAccountNumber(accId);
         account.setClientId(cId);
         return accountDao.updateAccount(account, accId);
-
     }
+
 
     public Account createAccount(String clientId, Account account) throws SQLException, ClientNotFoundException {
 
@@ -144,12 +172,13 @@ public class AccountService {
         return success;
     }
 
-    public void verifyAccountExist(int clientId, int accountNumber) throws AccountNotFoundException, SQLException {
-        if (accountDao.getAccountByAccountID(clientId, accountNumber) == null) {
-            throw new AccountNotFoundException("An account with the id of " + accountNumber +
-                " does not exist for this client.");
-        };
+    public Account verifyAccountExist(int clientId, int accountNumber) throws AccountNotFoundException, SQLException {
+        Account verifiedAccount = accountDao.getAccountByAccountID(clientId, accountNumber);
+        if (verifiedAccount == null) {
 
+        throw new AccountNotFoundException("An account with the id of " + accountNumber + " does not exist for this client.");
+        };
+        return verifiedAccount;
     }
 
     public void validateAccountInformation(Account account) {

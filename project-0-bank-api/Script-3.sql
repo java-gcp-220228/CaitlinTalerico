@@ -6,9 +6,10 @@ drop table if exists clients;
 
 CREATE TABLE clients (
 	id SERIAL PRIMARY KEY,
-	firstName VARCHAR (50) NOT NULL,
-	lastName VARCHAR (50) NOT NULL,
-	age INTEGER not NULL CHECK (age >= 18)
+	first_name VARCHAR (50) NOT NULL,
+	last_name VARCHAR (50) NOT NULL,
+	age INTEGER not NULL CHECK (age >= 18),
+	UNIQUE(first_name, last_name, age)
 	
 );
 
@@ -19,12 +20,14 @@ CREATE TABLE accounts (
 	client_id INTEGER NOT NULL,
 	account_number INTEGER NOT NULL DEFAULT 1
 	
+	
 	CONSTRAINT chk_type CHECK (account_type IN ('Checking', 'Savings',  'MMA', 'CD')),
-	CONSTRAINT fk_client FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE CASCADE
+	CONSTRAINT fk_client FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE cascade,
+	UNIQUE(client_id, account_number)
 	
 );
 
-INSERT INTO clients (firstName, lastName, age)
+INSERT INTO clients (first_name, last_name, age)
 VALUES
 ('Scrooge', 'McDuck', 89),
 ('Ragnar', 'Meozer', 45),
@@ -94,3 +97,6 @@ from clients;
 
 select *
 from accounts;
+
+create index account_index
+on accounts(client_id, account_number);

@@ -34,7 +34,6 @@ public class ClientController implements Controller{
     };
 
     private final Handler addClient = (ctx) -> {
-        System.out.println(ctx.body());
         Client clientToAdd = ctx.bodyAsClass(Client.class);
 
         Client newClient = clientService.addClient(clientToAdd);

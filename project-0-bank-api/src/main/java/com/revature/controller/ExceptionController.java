@@ -47,7 +47,7 @@ public class ExceptionController implements Controller{
         logger.warn("User did not provided unrecognized field or no body.\n" +
                 "Exception message: " + e.getMessage());
         ctx.status(400);
-        if (ctx.matchedPath().equals("/clients")) {
+        if (ctx.matchedPath().equals("/clients") || ctx.matchedPath().equals("/clients/{clientId}")) {
             ctx.json("Improper request body provided. Please use the template below to form your request.\n" +
                     "{\n" +
                     "   \"firstName\" : \"\",\n" +
@@ -55,18 +55,24 @@ public class ExceptionController implements Controller{
                     "    \"age\" : \"(Any age between 18 and 125)\"\n" +
                     "}");
         } else if (ctx.matchedPath().equals("/clients/{clientId}/accounts/{accountId}") && ctx.method().equals("PUT")){
-            System.out.println(ctx.method());
+            ctx.json("Improper request body provided. Please use the template below to form your request.\n" +
+                    "{\n" +
+                    "   \"clientId\" : \"\",\n" +
+                    "   \"accountType\" : \"(Checking, Savings, MMA, CD)\",\n" +
+                    "    \"balance\" : \"\"\n" +
+                    "}");
+        } else if (ctx.matchedPath().equals("/clients/{clientId}/accounts/{accountId}") && ctx.method().equals("PATCH")) {
             ctx.json("Improper request body provided. Please use the template below to form your request.\n" +
                     "{\n" +
                     "   \"clientId\" : \"(optional)\",\n" +
                     "   \"accountType\" : \"(Checking, Savings, MMA, CD)\",\n" +
                     "    \"balance\" : \"(optional)\"\n" +
                     "}");
-        } else {
+        }else {
             ctx.json("Improper request body provided. Please use the template below to form your request.\n" +
                     "{\n" +
                     "   \"accountType\" : \"(Checking, Savings, MMA, CD)\",\n" +
-                    "    \"balance\" : \"(optional)\"\n" +
+                    "    \"balance\" : \"\"\n" +
                     "}");
         }
     };

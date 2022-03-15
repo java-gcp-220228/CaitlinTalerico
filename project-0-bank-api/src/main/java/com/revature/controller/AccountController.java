@@ -84,6 +84,28 @@ public class AccountController implements Controller{
         ctx.json(editedAccount);
     };
 
+    private final Handler patchAccount = (ctx) -> {
+        ctx.bodyValidator(Account.class);
+
+        Account accountToEdit = ctx.bodyAsClass(Account.class);
+
+        String clientId = ctx.pathParam("clientId");
+        String accountId = ctx.pathParam("accountId");
+        if (ctx.body().contains("balance")) {
+            Account editedAccount = accountService.partialUpdateAccountChangeBalance(clientId, accountId, accountToEdit);
+            ctx.status(200);
+            ctx.json(editedAccount);
+        } else {
+            Account editedAccount = accountService.partialUpdateAccount(clientId, accountId, accountToEdit);
+            ctx.status(200);
+            ctx.json(editedAccount);
+
+        }
+
+
+
+
+    };
     private final Handler deleteAccount = (ctx) -> {
           String clientId = ctx.pathParam("clientId");
           String accountId = ctx.pathParam("accountId");
@@ -100,6 +122,7 @@ public class AccountController implements Controller{
         app.get("/clients/{clientId}/accounts", getAllAccounts);
         app.get("/clients/{clientId}/accounts/{accountId}", getAccountById);
         app.post("/clients/{clientId}/accounts", addAccount);
+        app.patch("/clients/{clientId}/accounts/{accountId}", patchAccount);
         app.put("/clients/{clientId}/accounts/{accountId}", updateAccount);
         app.delete("/clients/{clientId}/accounts/{accountId}", deleteAccount);
     }
