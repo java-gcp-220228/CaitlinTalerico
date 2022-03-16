@@ -1,4 +1,4 @@
-package com.revature.response;
+package com.revature.model;
 
 import java.util.Objects;
 

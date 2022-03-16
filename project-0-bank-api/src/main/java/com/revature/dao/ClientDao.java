@@ -23,7 +23,6 @@ public class ClientDao {
             pstmt.executeUpdate();
 
             ResultSet rs = pstmt.getGeneratedKeys();
-            System.out.println(rs);
             rs.next();
             int generatedId = rs.getInt(1);
 
@@ -41,7 +40,6 @@ public class ClientDao {
             pstmt.setInt(1, id);
 
             ResultSet rs = pstmt.executeQuery();
-            System.out.println(rs);
 
             if (rs.next()) {
                 String firstName = rs.getString("first_name");

@@ -1,10 +1,8 @@
 package com.revature.controller;
 
 import com.revature.model.Account;
-import com.revature.model.Client;
-import com.revature.response.ResponseBody;
+import com.revature.model.ResponseBody;
 import com.revature.service.AccountService;
-import com.revature.service.ClientService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
