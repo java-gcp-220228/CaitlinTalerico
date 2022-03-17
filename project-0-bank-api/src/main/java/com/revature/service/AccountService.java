@@ -177,7 +177,7 @@ public class AccountService {
         if (verifiedAccount == null) {
 
         throw new AccountNotFoundException("An account with the id of " + accountNumber + " does not exist for this client.");
-        };
+        }
         return verifiedAccount;
     }
 

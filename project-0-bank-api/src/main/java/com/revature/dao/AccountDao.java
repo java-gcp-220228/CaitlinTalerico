@@ -66,7 +66,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE client_id = ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? ORDER BY account_number";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -111,7 +111,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance <= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance <= ? ORDER BY balance";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -135,7 +135,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance >= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance >= ? ORDER BY balance DESC";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
@@ -158,7 +158,7 @@ public class AccountDao {
         List<Account> accounts = new ArrayList<>();
 
         try (Connection con = ConnectionUtility.getConnection())  {
-            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance >=? AND balance <= ?";
+            String sql = "SELECT * FROM accounts WHERE client_id = ? AND balance >=? AND balance <= ? ORDER BY balance";
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setInt(1, clientId);
