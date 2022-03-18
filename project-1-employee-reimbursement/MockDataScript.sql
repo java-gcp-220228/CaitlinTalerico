@@ -36,9 +36,13 @@ values
 ('number1boss', '12345', 'Michael', 'Scott', 'michael_scott@dundermifflin.net', 100);
 
 
-insert into reimbursements 
 
+insert into reimbursements  (REIMB_AMOUNT, REIMB_SUBMITTED, REIMB_DESCRIPTION, REIMB_RECEIPT, REIMB_AUTHOR, REIMB_TYPE_ID)
+VALUES
+(250, '2022-03-18 13:49:51.873 -0600', 'Airfare for Company Conference','https://storage.googleapis.com/reimb-receipt-images/sample_receipt_1.png',7, 20);
 
+SELECT *
+FROM reimbursements 
 
 
 
