@@ -35,14 +35,17 @@ values
 ('not_creed', 'notapassword', 'Creed', 'Bratton', 'creed_bratt@dundermifflin.com', 700),
 ('number1boss', '12345', 'Michael', 'Scott', 'michael_scott@dundermifflin.net', 100);
 
-
+select *
+from users;
 
 insert into reimbursements  (REIMB_AMOUNT, REIMB_SUBMITTED, REIMB_DESCRIPTION, REIMB_RECEIPT, REIMB_AUTHOR, REIMB_TYPE_ID)
 VALUES
-(250, '2022-03-18 13:49:51.873 -0600', 'Airfare for Company Conference','https://storage.googleapis.com/reimb-receipt-images/sample_receipt_1.png',7, 20);
+(1007.67, '2022-03-18 13:49:51.873 -0600', 'Sales training bootcamp','https://storage.googleapis.com/reimb-receipt-images/sample_receipt_1.png', 11, 40),
+(567.43, '2022-02-17 10:48:51.873 -0600', 'Company Dinner','https://storage.googleapis.com/reimb-receipt-images/sample_receipt_2.png',11, 30),
+(113.56, '2022-01-16 09:35:22.873 -0400', 'Car rental','https://storage.googleapis.com/reimb-receipt-images/sample_receipt_1.png',9, 20);
 
 SELECT *
-FROM reimbursements 
+FROM reimbursements;
 
 
 
