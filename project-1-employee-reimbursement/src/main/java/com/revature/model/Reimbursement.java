@@ -1,37 +1,41 @@
 package com.revature.model;
 
-import java.sql.Timestamp;
-import java.util.Date;
+
+
 import java.util.Objects;
 
 public class Reimbursement {
     private int id;
     private double amount;
     private String submitTimestamp;
-    private Date resolveTimestamp;
+    private String resolveTimestamp;
     private String description;
     private String receiptUrl;
-    private User author;
-    private User resolver;
-    private ReimbStatus status;
-    private ReimbType type;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private int resolverId;
+    private String type;
+    private String status;
 
     public Reimbursement() {
 
     }
 
-    public Reimbursement(int id, double amount, String submitTimestamp, Date resolveTimestamp, String description, String receiptUrl,
-                         User author, User resolver, ReimbStatus status, ReimbType type) {
+    public Reimbursement(int id, double amount, String submitTimestamp, String resolveTimestamp, String description, String receiptUrl, String firstName,
+                         String lastName, String email, int resolverId, String type, String status) {
         this.id = id;
         this.amount = amount;
         this.submitTimestamp = submitTimestamp;
         this.resolveTimestamp = resolveTimestamp;
         this.description = description;
         this.receiptUrl = receiptUrl;
-        this.author = author;
-        this.resolver = resolver;
-        this.status = status;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.resolverId = resolverId;
         this.type = type;
+        this.status = status;
     }
 
     public int getId() {
@@ -58,11 +62,11 @@ public class Reimbursement {
         this.submitTimestamp = submitTimestamp;
     }
 
-    public Date getResolveTimestamp() {
+    public String getResolveTimestamp() {
         return resolveTimestamp;
     }
 
-    public void setResolveTimestamp(Date resolveTimestamp) {
+    public void setResolveTimestamp(String resolveTimestamp) {
         this.resolveTimestamp = resolveTimestamp;
     }
 
@@ -82,36 +86,52 @@ public class Reimbursement {
         this.receiptUrl = receiptUrl;
     }
 
-    public User getAuthor() {
-        return author;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public User getResolver() {
-        return resolver;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setResolver(User resolver) {
-        this.resolver = resolver;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public ReimbStatus getStatus() {
-        return status;
+    public String getEmail() {
+        return email;
     }
 
-    public void setStatus(ReimbStatus status) {
-        this.status = status;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public ReimbType getType() {
+    public int getResolverId() {
+        return resolverId;
+    }
+
+    public void setResolverId(int resolverId) {
+        this.resolverId = resolverId;
+    }
+
+    public String getType() {
         return type;
     }
 
-    public void setType(ReimbType type) {
+    public void setType(String type) {
         this.type = type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
@@ -119,12 +139,12 @@ public class Reimbursement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reimbursement that = (Reimbursement) o;
-        return id == that.id && Double.compare(that.amount, amount) == 0 && Objects.equals(submitTimestamp, that.submitTimestamp) && Objects.equals(resolveTimestamp, that.resolveTimestamp) && Objects.equals(description, that.description) && Objects.equals(receiptUrl, that.receiptUrl) && Objects.equals(author, that.author) && Objects.equals(resolver, that.resolver) && Objects.equals(status, that.status) && Objects.equals(type, that.type);
+        return id == that.id && Double.compare(that.amount, amount) == 0 && resolverId == that.resolverId && Objects.equals(submitTimestamp, that.submitTimestamp) && Objects.equals(resolveTimestamp, that.resolveTimestamp) && Objects.equals(description, that.description) && Objects.equals(receiptUrl, that.receiptUrl) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(type, that.type) && Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, amount, submitTimestamp, resolveTimestamp, description, receiptUrl, author, resolver, status, type);
+        return Objects.hash(id, amount, submitTimestamp, resolveTimestamp, description, receiptUrl, firstName, lastName, email, resolverId, type, status);
     }
 
     @Override
@@ -136,10 +156,12 @@ public class Reimbursement {
                 ", resolveTimestamp='" + resolveTimestamp + '\'' +
                 ", description='" + description + '\'' +
                 ", receiptUrl='" + receiptUrl + '\'' +
-                ", author=" + author +
-                ", resolver=" + resolver +
-                ", status=" + status +
-                ", type=" + type +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", resolverId=" + resolverId +
+                ", type='" + type + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

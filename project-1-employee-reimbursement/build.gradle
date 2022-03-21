@@ -20,8 +20,8 @@ dependencies {
 
     implementation 'org.postgresql:postgresql:42.3.3'
     implementation 'io.javalin:javalin:4.3.0'
-    implementation 'ch.qos.logback:logback-classic:1.2.10'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
     implementation platform('com.google.cloud:libraries-bom:25.0.0')
 
     implementation 'com.google.cloud:google-cloud-storage'
@@ -45,5 +45,5 @@ jacocoTestReport {
 
 jacoco {
     toolVersion = "0.8.7"
-    reportsDirectory = layout.buildDirectory.dir('JacocoReportDir')
+    reportsDirectory = layout.buildDirectory.dir('JacocoReportDir') as Directory
 }

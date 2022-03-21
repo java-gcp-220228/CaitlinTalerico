@@ -40,26 +40,17 @@ public class ReimbursementController implements Controller{
         Jws<Claims> token = this.jwtService.parseJwt(jwt);
 
         String userId = ctx.pathParam("user_id");
-        int id = Integer.parseInt(userId);
-        if(!token.getBody().get("user_id").equals(id)) {
+        if(!(""+token.getBody().get("user_id")).equals(userId)) {
             throw new UnauthorizedResponse("You cannot add a reimbursement request for anyone but yourself.");
         }
         UploadedFile uploadedImage = ctx.uploadedFiles().get(0);
 
-        if (uploadedImage.getSize() > 10000000) {
-            throw new SizeLimitExceededException("File size exceeded limit of 10MB. Uploaded File Size: " + uploadedImage.getSize());
-        }
-        if (!uploadedImage.getContentType().equals("image/png") && !uploadedImage.getContentType().equals("image/jpg") && !uploadedImage.getContentType().equals("image/jpeg")) {
-            throw new InvalidFileTypeException("Invalid file type for uploaded image. Accepted files: .png .jpg .jpeg");
-        }
+
         AddReimbursementDTO dto = new AddReimbursementDTO();
         dto.setReimbAmount(Double.parseDouble(ctx.formParam("amount")));
         dto.setReimbAuthor(Integer.parseInt(ctx.formParam("author")));
         dto.setReimbDescription(ctx.formParam("description"));
         dto.setReimbType(Integer.parseInt(ctx.formParam("type")));
-        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
-        Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
-        dto.setReimbSubmitted(submitted);
         dto.setReimbReceiptImage(uploadedImage);
         Reimbursement newReimbursement = reimbursementService.addReimbursement(dto);
         ctx.status(200);
@@ -74,6 +65,9 @@ public class ReimbursementController implements Controller{
         //C
         app.post("/users/{user_id}/reimbursements", addReimbursement);
         //R
+//        app.get("/users/{user_id}/reimbursements", getAllReimbursementsForUser); //?status=
+//        app.get("/reimbursements", getAllReimbursements); //?role=  ?status=
+//        app.get("/users/{user_id}/reimbursements/{reimb_id}", getSingleReimbursement);
         //U-Partial
         //D
     }
