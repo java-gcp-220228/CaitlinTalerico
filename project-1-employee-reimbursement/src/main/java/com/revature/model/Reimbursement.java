@@ -1,115 +1,117 @@
 package com.revature.model;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
 public class Reimbursement {
+    private int id;
+    private double amount;
+    private String submitTimestamp;
+    private Date resolveTimestamp;
+    private String description;
+    private String receiptUrl;
+    private User author;
+    private User resolver;
+    private ReimbStatus status;
+    private ReimbType type;
 
-    private int reimbId;
-    private double reimbAmount;
-    private String reimbSubmitted;
-    private String reimbResolved;
-    private String reimbDescription;
-    private String reimbReceiptUrl;
-    private int reimbAuthor;
-    private int reimbResolver;
-    private int reimbStatus;
-    private int reimbType;
+    public Reimbursement() {
 
-    public Reimbursement(){}
-
-    public Reimbursement(int reimbId, double reimbAmount, String reimbSubmitted, String reimbResolved,
-                         String reimbDescription, String reimbReceiptUrl, int reimbAuthor,
-                         int reimbResolver, int reimbStatus, int reimbType) {
-        this.reimbId = reimbId;
-        this.reimbAmount = reimbAmount;
-        this.reimbSubmitted = reimbSubmitted;
-        this.reimbResolved = reimbResolved;
-        this.reimbDescription = reimbDescription;
-        this.reimbReceiptUrl = reimbReceiptUrl;
-        this.reimbAuthor = reimbAuthor;
-        this.reimbResolver = reimbResolver;
-        this.reimbStatus = reimbStatus;
-        this.reimbType = reimbType;
     }
 
-    public int getReimbId() {
-        return reimbId;
+    public Reimbursement(int id, double amount, String submitTimestamp, Date resolveTimestamp, String description, String receiptUrl,
+                         User author, User resolver, ReimbStatus status, ReimbType type) {
+        this.id = id;
+        this.amount = amount;
+        this.submitTimestamp = submitTimestamp;
+        this.resolveTimestamp = resolveTimestamp;
+        this.description = description;
+        this.receiptUrl = receiptUrl;
+        this.author = author;
+        this.resolver = resolver;
+        this.status = status;
+        this.type = type;
     }
 
-    public void setReimbId(int reimbId) {
-        this.reimbId = reimbId;
+    public int getId() {
+        return id;
     }
 
-    public double getReimbAmount() {
-        return reimbAmount;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setReimbAmount(double reimbAmount) {
-        this.reimbAmount = reimbAmount;
+    public double getAmount() {
+        return amount;
     }
 
-    public String getReimbSubmitted() {
-        return reimbSubmitted;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
-    public void setReimbSubmitted(String reimbSubmitted) {
-        this.reimbSubmitted = reimbSubmitted;
+    public String getSubmitTimestamp() {
+        return submitTimestamp;
     }
 
-    public String getReimbResolved() {
-        return reimbResolved;
+    public void setSubmitTimestamp(String submitTimestamp) {
+        this.submitTimestamp = submitTimestamp;
     }
 
-    public void setReimbResolved(String reimbResolved) {
-        this.reimbResolved = reimbResolved;
+    public Date getResolveTimestamp() {
+        return resolveTimestamp;
     }
 
-    public String getReimbDescription() {
-        return reimbDescription;
+    public void setResolveTimestamp(Date resolveTimestamp) {
+        this.resolveTimestamp = resolveTimestamp;
     }
 
-    public void setReimbDescription(String reimbDescription) {
-        this.reimbDescription = reimbDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public String getReimbReceiptUrl() {
-        return reimbReceiptUrl;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setReimbReceiptUrl(String reimbReceiptUrl) {
-        this.reimbReceiptUrl = reimbReceiptUrl;
+    public String getReceiptUrl() {
+        return receiptUrl;
     }
 
-    public int getReimbAuthor() {
-        return reimbAuthor;
+    public void setReceiptUrl(String receiptUrl) {
+        this.receiptUrl = receiptUrl;
     }
 
-    public void setReimbAuthor(int reimbAuthor) {
-        this.reimbAuthor = reimbAuthor;
+    public User getAuthor() {
+        return author;
     }
 
-    public int getReimbResolver() {
-        return reimbResolver;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
-    public void setReimbResolver(int reimbResolver) {
-        this.reimbResolver = reimbResolver;
+    public User getResolver() {
+        return resolver;
     }
 
-    public int getReimbStatus() {
-        return reimbStatus;
+    public void setResolver(User resolver) {
+        this.resolver = resolver;
     }
 
-    public void setReimbStatus(int reimbStatus) {
-        this.reimbStatus = reimbStatus;
+    public ReimbStatus getStatus() {
+        return status;
     }
 
-    public int getReimbType() {
-        return reimbType;
+    public void setStatus(ReimbStatus status) {
+        this.status = status;
     }
 
-    public void setReimbType(int reimbType) {
-        this.reimbType = reimbType;
+    public ReimbType getType() {
+        return type;
+    }
+
+    public void setType(ReimbType type) {
+        this.type = type;
     }
 
     @Override
@@ -117,27 +119,27 @@ public class Reimbursement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reimbursement that = (Reimbursement) o;
-        return reimbId == that.reimbId && Double.compare(that.reimbAmount, reimbAmount) == 0 && reimbAuthor == that.reimbAuthor && reimbResolver == that.reimbResolver && reimbStatus == that.reimbStatus && reimbType == that.reimbType && Objects.equals(reimbSubmitted, that.reimbSubmitted) && Objects.equals(reimbResolved, that.reimbResolved) && Objects.equals(reimbDescription, that.reimbDescription) && Objects.equals(reimbReceiptUrl, that.reimbReceiptUrl);
+        return id == that.id && Double.compare(that.amount, amount) == 0 && Objects.equals(submitTimestamp, that.submitTimestamp) && Objects.equals(resolveTimestamp, that.resolveTimestamp) && Objects.equals(description, that.description) && Objects.equals(receiptUrl, that.receiptUrl) && Objects.equals(author, that.author) && Objects.equals(resolver, that.resolver) && Objects.equals(status, that.status) && Objects.equals(type, that.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reimbId, reimbAmount, reimbSubmitted, reimbResolved, reimbDescription, reimbReceiptUrl, reimbAuthor, reimbResolver, reimbStatus, reimbType);
+        return Objects.hash(id, amount, submitTimestamp, resolveTimestamp, description, receiptUrl, author, resolver, status, type);
     }
 
     @Override
     public String toString() {
         return "Reimbursement{" +
-                "reimbId=" + reimbId +
-                ", reimbAmount=" + reimbAmount +
-                ", reimbSubmitted='" + reimbSubmitted + '\'' +
-                ", reimbResolved='" + reimbResolved + '\'' +
-                ", reimbDescription='" + reimbDescription + '\'' +
-                ", reimbReceiptUrl='" + reimbReceiptUrl + '\'' +
-                ", reimbAuthor=" + reimbAuthor +
-                ", reimbResolver=" + reimbResolver +
-                ", reimbStatus=" + reimbStatus +
-                ", reimbType=" + reimbType +
+                "id=" + id +
+                ", amount=" + amount +
+                ", submitTimestamp='" + submitTimestamp + '\'' +
+                ", resolveTimestamp='" + resolveTimestamp + '\'' +
+                ", description='" + description + '\'' +
+                ", receiptUrl='" + receiptUrl + '\'' +
+                ", author=" + author +
+                ", resolver=" + resolver +
+                ", status=" + status +
+                ", type=" + type +
                 '}';
     }
 }

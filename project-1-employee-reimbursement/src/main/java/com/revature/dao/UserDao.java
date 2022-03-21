@@ -1,6 +1,8 @@
 package com.revature.dao;
 
+import com.revature.dto.LoginDTO;
 import com.revature.model.User;
+import com.revature.model.UserRole;
 import com.revature.utility.ConnectionUtility;
 
 import java.sql.Connection;
@@ -11,9 +13,9 @@ import java.sql.SQLException;
 public class UserDao {
     public UserDao(){}
 
-    public User getUserByUsernameAndPassword(String username, String password) throws SQLException {
+    public User getUserByUsernameAndPassword(LoginDTO dto) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
-            String sql = "select u.user_id, u.username, ur.user_role " +
+            String sql = "select u.user_id, u.username, u.first_name, u.last_name, u.user_email, ur.user_role_id, ur.user_role " +
                     "from users u " +
                     "inner join user_roles ur " +
                     "on ur.user_role_id = u.user_role_id " +
@@ -21,17 +23,22 @@ public class UserDao {
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
+            pstmt.setString(1, dto.getUsername());
+            pstmt.setString(2, dto.getPassword());
 
             ResultSet rs = pstmt.executeQuery();
 
-            if (rs.next()) { //login succesful
+            if (rs.next()) { //login successful
                 int userId = rs.getInt("user_id");
                 String usName = rs.getString("username");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("user_email");
+                int userRoleId = rs.getInt("user_role_id");
                 String role = rs.getString("user_role");
 
-                return new User(userId, usName, role);
+                UserRole userRole = new UserRole(userRoleId, role);
+                return new User(userId, usName, firstName, lastName, email, userRole);
             }
 
 

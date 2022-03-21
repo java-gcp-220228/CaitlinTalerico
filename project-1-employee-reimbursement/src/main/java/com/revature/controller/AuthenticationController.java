@@ -27,7 +27,7 @@ public class AuthenticationController implements Controller{
 
         LoginDTO loginInfo = ctx.bodyAsClass(LoginDTO.class);
 
-        User user = userService.login(loginInfo.getUsername(), loginInfo.getPassword());
+        User user = userService.login(loginInfo);
 
         String jwt = jwtService.createJWT(user);
 

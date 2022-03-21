@@ -1,7 +1,9 @@
 package com.revature.service;
 
 import com.revature.dao.UserDao;
+import com.revature.dto.LoginDTO;
 import com.revature.model.User;
+import com.revature.model.UserRole;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,6 +29,7 @@ public class UserServiceTest {
 
 
 
+    private LoginDTO dto = new LoginDTO();
     private AutoCloseable closeable;
     @BeforeAll
     public void set_up() {
@@ -40,11 +43,16 @@ public class UserServiceTest {
 
     @Test
     public void testSuccessfulLoginAttempt() throws SQLException, FailedLoginException {
-        when(mockUserDao.getUserByUsernameAndPassword("admin", "password")).thenReturn(
-                new User(1, "admin", "administrator"));
-        User expectedUser = new User(1, "admin", "administrator");
+        dto.setUsername("admin");
+        dto.setPassword("pass");
 
-        User actualUser = userService.login("admin", "password");
+        UserRole userRole = new UserRole(1, "administrator");
+
+        when(mockUserDao.getUserByUsernameAndPassword(dto)).thenReturn(
+                new User(1, "admin", "Jane", "Doe", "email@test.com", userRole));
+        User expectedUser = new User(1, "admin", "Jane", "Doe", "email@test.com", userRole);
+
+        User actualUser = userService.login(dto);
 
 
         Assertions.assertEquals(expectedUser, actualUser);
@@ -52,10 +60,10 @@ public class UserServiceTest {
 
     @Test
     public void testFailedLoginAttempt() throws SQLException {
-        when(mockUserDao.getUserByUsernameAndPassword(anyString(), anyString())).thenReturn(null);
+        when(mockUserDao.getUserByUsernameAndPassword(dto)).thenReturn(null);
 
         Assertions.assertThrows(FailedLoginException.class, ()->{
-            userService.login("fakename", "fakepassword");
+            userService.login(dto);
         });
     }
 }
