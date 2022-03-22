@@ -26,7 +26,6 @@ public class ReimbursementDao {
     // TODO 2. getAllReimbursements for a user
     // TODO 3. getAllReimbursements of certain status
     // TODO 4. getAllReimbursements of certain department
-    // TODO 5. getAllReimbursements of certain department and user
     // TODO 6. getAllReimbursements of certain department, user, and status
     // TODO 7. getSingleReimbursement
 
@@ -161,4 +160,126 @@ public class ReimbursementDao {
             return reimbursements;
             }
         }
+    public List<Reimbursement> getReimbursementsByUserAndStatus(int userId, String currentStatus) throws SQLException {
+        try (Connection con = ConnectionUtility.getConnection()){
+            String sql = "SELECT * " +
+                    "FROM employees e " +
+                    "WHERE e.user_id = ?";
+            PreparedStatement pstmtSelect = con.prepareStatement(sql);
+            pstmtSelect.setInt(1, userId);
+
+            ResultSet rsEmail = pstmtSelect.executeQuery();
+            rsEmail.next();
+
+            // Get user email for second query
+            String email = rsEmail.getString("user_email");
+
+
+            String sqlSelect = "SELECT * " +
+                    "FROM tickets t " +
+                    "WHERE t.user_email = ? AND t.reimb_status = ?";
+            PreparedStatement pstmt = con.prepareStatement(sqlSelect);
+            pstmt.setString(1, email);
+            pstmt.setString(2, currentStatus);
+            ResultSet rs = pstmt.executeQuery();
+
+            rs.next();
+
+            List<Reimbursement> reimbursements = new ArrayList<>();
+
+            while (rs.next()) {
+                int id = rs.getInt("reimb_id");
+                double amount = rs.getDouble("reimb_amount");
+                String date = new Date(rs.getTimestamp("reimb_submitted").getTime()).toString();
+                String description = rs.getString("reimb_description");
+                String url = rs.getString("reimb_receipt");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String type = rs.getString("reimb_type");
+                String status = rs.getString("reimb_status");
+
+                Reimbursement reimbursement = new Reimbursement(id, amount, date, null, description, url, firstName, lastName, email, 0, status, type);
+                reimbursements.add(reimbursement);
+            }
+            return reimbursements;
+        }
+    }
+    public List<Reimbursement> getReimbursementsByDepartment(int userId, String department) throws SQLException {
+        try (Connection con = ConnectionUtility.getConnection()){
+            String sql = "SELECT * " +
+                    "FROM employees e " +
+                    "WHERE e.user_id = ?";
+            PreparedStatement pstmtSelect = con.prepareStatement(sql);
+            pstmtSelect.setInt(1, userId);
+
+            ResultSet rsEmail = pstmtSelect.executeQuery();
+            rsEmail.next();
+
+            // Get user email for second query
+            String email = rsEmail.getString("user_email");
+
+
+            String sqlSelect = "SELECT * " +
+                    "FROM tickets t " +
+                    "WHERE t.user_email = ? AND t.user_role = ?";
+            PreparedStatement pstmt = con.prepareStatement(sqlSelect);
+            pstmt.setString(1, email);
+            pstmt.setString(2, department);
+            ResultSet rs = pstmt.executeQuery();
+
+            rs.next();
+
+            List<Reimbursement> reimbursements = new ArrayList<>();
+
+            while (rs.next()) {
+                int id = rs.getInt("reimb_id");
+                double amount = rs.getDouble("reimb_amount");
+                String date = new Date(rs.getTimestamp("reimb_submitted").getTime()).toString();
+                String description = rs.getString("reimb_description");
+                String url = rs.getString("reimb_receipt");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String type = rs.getString("reimb_type");
+                String status = rs.getString("reimb_status");
+
+                Reimbursement reimbursement = new Reimbursement(id, amount, date, null, description, url, firstName, lastName, email, 0, status, type);
+                reimbursements.add(reimbursement);
+            }
+            return reimbursements;
+        }
+    }
+    public List<Reimbursement> getAllReimbursements() throws SQLException {
+        try (Connection con = ConnectionUtility.getConnection()){
+
+
+            String sqlSelect = "SELECT * " +
+                    "FROM tickets t ";
+            PreparedStatement pstmt = con.prepareStatement(sqlSelect);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            rs.next();
+
+            List<Reimbursement> reimbursements = new ArrayList<>();
+
+            while (rs.next()) {
+                int id = rs.getInt("reimb_id");
+                double amount = rs.getDouble("reimb_amount");
+                String date = new Date(rs.getTimestamp("reimb_submitted").getTime()).toString();
+                String resolveDate = new Date(rs.getTimestamp("reimb_resolved").getTime()).toString();
+                String description = rs.getString("reimb_description");
+                String url = rs.getString("reimb_receipt");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("user_email");
+                String type = rs.getString("reimb_type");
+                String status = rs.getString("reimb_status");
+                int resolverId = rs.getInt("reimb_resolver");
+
+                Reimbursement reimbursement = new Reimbursement(id, amount, date, resolveDate, description, url, firstName, lastName, email, resolverId, status, type);
+                reimbursements.add(reimbursement);
+            }
+            return reimbursements;
+        }
+    }
 }
