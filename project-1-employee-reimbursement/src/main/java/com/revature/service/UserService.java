@@ -2,6 +2,8 @@ package com.revature.service;
 
 import com.revature.dao.UserDao;
 import com.revature.dto.LoginDTO;
+import com.revature.dto.UserDTO;
+import com.revature.exception.UserDoesNotExist;
 import com.revature.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,5 +32,18 @@ public class UserService {
         }
         logger.info("Successful login.\nUsername: " + dto.getUsername());
         return user;
+    }
+
+    public UserDTO getUserInfo(String user_id) throws SQLException, UserDoesNotExist {
+        try{
+            int uId = Integer.parseInt(user_id);
+            UserDTO user = userDao.getUserByUserId(uId);
+            if (user == null){
+                throw new UserDoesNotExist("A user with an id of " + uId + " does not exist.");
+            }
+            return user;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Inavlid integer provided for user id.");
+        }
     }
 }

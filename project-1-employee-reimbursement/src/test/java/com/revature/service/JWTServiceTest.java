@@ -44,7 +44,7 @@ public class JWTServiceTest {
         Object role = token.getBody().get("user_role_id");
 
         Assertions.assertEquals(user.getId(), id);
-        Assertions.assertEquals(user.getUsername(), username);
+        Assertions.assertEquals(user.getEmail(), username);
         Assertions.assertEquals(user.getUserRole().getId(), role);
     }
 

@@ -28,9 +28,11 @@ CREATE VIEW tickets AS
 	on r.reimb_status_id = rs.reimb_status_id
 	inner join user_roles usr
 	on ur.user_role_id = usr.user_role_id; 
-	
+
+DROP VIEW IF EXISTS employees;
+
 CREATE VIEW employees AS 
-	SELECT ur.user_id, ur.first_name, ur.last_name, ur.user_email, usr.user_role
+	SELECT ur.user_id, ur.first_name, ur.last_name, ur.user_email, usr.user_role, usr.user_role_id 
 	FROM users ur
 	INNER JOIN user_roles usr 
 	ON ur.user_role_id = usr.user_role_id;

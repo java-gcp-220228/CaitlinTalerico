@@ -47,5 +47,9 @@ VALUES
 SELECT *
 FROM reimbursements;
 
+insert into reimbursements (REIMB_AMOUNT, REIMB_SUBMITTED, reimb_resolved,  REIMB_DESCRIPTION, REIMB_RECEIPT, REIMB_AUTHOR, REIMB_RESOLVER, REIMB_TYPE_ID, REIMB_STATUS_ID)
+VALUES 
+(113.56, '2022-01-16 09:35:22.873 -0400', '2022-01-26 09:35:22.873 -0400', 'Car rental','https://storage.googleapis.com/reimb-receipt-images/sample_receipt_1.png',9, 1, 20, 303);
+
 
 

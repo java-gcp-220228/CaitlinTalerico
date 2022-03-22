@@ -1,11 +1,14 @@
 package com.revature.controller;
 
-import com.revature.exception.InvalidFileTypeException;
+import com.revature.dto.ResponseReimbursementDTO;
+import com.revature.dto.UpdateReimbursementDTO;
 import com.revature.dto.AddReimbursementDTO;
 import com.revature.model.Reimbursement;
+
 import com.revature.service.JWTService;
 import com.revature.service.ReimbursementService;
-import com.revature.utility.UploadImageUtility;
+import com.revature.service.UserService;
+
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.UnauthorizedResponse;
@@ -13,22 +16,20 @@ import io.javalin.http.UploadedFile;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
-import javax.naming.SizeLimitExceededException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
+
+import java.util.List;
+
 
 public class ReimbursementController implements Controller{
 
     private JWTService jwtService;
     private ReimbursementService reimbursementService;
+    private UserService userService;
 
     public ReimbursementController() {
         this.jwtService = new JWTService();
         this.reimbursementService = new ReimbursementService();
+        this.userService = new UserService();
     }
 
     // /users/{user_id}/reimbursements
@@ -39,6 +40,7 @@ public class ReimbursementController implements Controller{
         // Just check that they have a valid token
         Jws<Claims> token = this.jwtService.parseJwt(jwt);
 
+
         String userId = ctx.pathParam("user_id");
         if(!(""+token.getBody().get("user_id")).equals(userId)) {
             throw new UnauthorizedResponse("You cannot add a reimbursement request for anyone but yourself.");
@@ -48,14 +50,138 @@ public class ReimbursementController implements Controller{
 
         AddReimbursementDTO dto = new AddReimbursementDTO();
         dto.setReimbAmount(Double.parseDouble(ctx.formParam("amount")));
-        dto.setReimbAuthor(Integer.parseInt(ctx.formParam("author")));
+        dto.setReimbAuthor((Integer)token.getBody().get("user_id"));
         dto.setReimbDescription(ctx.formParam("description"));
         dto.setReimbType(Integer.parseInt(ctx.formParam("type")));
         dto.setReimbReceiptImage(uploadedImage);
-        Reimbursement newReimbursement = reimbursementService.addReimbursement(dto);
-        ctx.status(200);
+        ResponseReimbursementDTO newReimbursement = reimbursementService.addReimbursement(dto);
+        ctx.status(201);
         ctx.json(newReimbursement);
 
+    };
+
+    private Handler getAllReimbursements = (ctx) -> {
+        String jwt = ctx.header("Authorization").split(" ")[1];
+
+        Jws<Claims> token = this.jwtService.parseJwt(jwt);
+
+        if (((Integer) token.getBody().get("user_role_id")) >= 300) {
+            throw new UnauthorizedResponse("You must be in the Finance department or a manager to access this endpoint.");
+        }
+
+        String department = ctx.queryParam("department");
+        String status = ctx.queryParam("status");
+
+        List<ResponseReimbursementDTO> reimbursements;
+
+        if (status != null && department != null) {
+            reimbursements = reimbursementService.getAllReimbursementsByStatusAndDepartment(status, department);
+        } else if (status != null) {
+            reimbursements = reimbursementService.getAllReimbursementsByStatus(status);
+        } else if (department != null) {
+            reimbursements = reimbursementService.getReimbursementsByDepartment(department);
+        } else {
+            reimbursements = reimbursementService.getAllReimbursements();
+        }
+        ctx.status(200);
+        ctx.json(reimbursements);
+    };
+
+    private Handler getReimbursementById = (ctx) -> {
+        String jwt = ctx.header("Authorization").split(" ")[1];
+
+        Jws<Claims> token = this.jwtService.parseJwt(jwt);
+
+        String userId = ctx.pathParam("user_id");
+
+        if((Integer) (token.getBody().get("user_role_id")) >= 300) {
+            if (!(""+token.getBody().get("user_id")).equals(userId)){
+                throw new UnauthorizedResponse("You cannot access a reimbursement that does not belong to you.");
+            }
+        }
+        String reimbId = ctx.pathParam("reimb_id");
+        Reimbursement reimbursement = reimbursementService.getReimbursementById(reimbId);
+        ctx.status(200);
+        ctx.json(reimbursement);
+
+    };
+
+    private Handler getAllReimbursementsForUser = (ctx) ->  {
+        String jwt = ctx.header("Authorization").split(" ")[1];
+
+        Jws<Claims> token = this.jwtService.parseJwt(jwt);
+
+        String userId = ctx.pathParam("user_id");
+        if (!(""+token.getBody().get("user_id")).equals(userId)){
+            throw new UnauthorizedResponse("You cannot access reimbursements that do not belong to you.");
+        }
+
+        String status = ctx.queryParam("status");
+        List<ResponseReimbursementDTO> reimbursements;
+        if (status != null) {
+            reimbursements = reimbursementService.getReimbursementsByUserAndStatus(userId, status);
+        } else {
+            reimbursements = reimbursementService.getReimbursementsByUser(userId);
+        }
+        ctx.status(200);
+        ctx.json(reimbursements);
+    };
+
+    private Handler editUnresolvedReimbursement = (ctx) -> {
+        String jwt = ctx.header("Authorization").split(" ")[1];
+
+        Jws<Claims> token = this.jwtService.parseJwt(jwt);
+
+        String userId = ctx.pathParam("user_id");
+        if (!(""+token.getBody().get("user_id")).equals(userId)) {
+            throw new UnauthorizedResponse("You cannot edit a reimbursement that does not belong to you.");
+        }
+        String reimbId = ctx.pathParam("reimb_id");
+        if (!(reimbursementService.getReimbursementById(reimbId).getEmail().equals(userService.getUserInfo(userId).getEmail()))) {
+            throw new UnauthorizedResponse("You cannot edit a reimbursement that does not belong to you.");
+        }
+
+        UpdateReimbursementDTO reimbursementDetails = ctx.bodyAsClass(UpdateReimbursementDTO.class);
+
+        Reimbursement reimbursement = reimbursementService.editUnresolvedReimbursement(reimbId, reimbursementDetails);
+        ctx.status(201);
+        ctx.json(reimbursement);
+    };
+
+    private Handler updateReimbursementStatus = (ctx) -> {
+        String jwt = ctx.header("Authorization").split(" ")[1];
+
+        Jws<Claims> token = this.jwtService.parseJwt(jwt);
+
+        if(!((Integer) (token.getBody().get("user_role_id")) >= 300 && (Integer) (token.getBody().get("user_role_id")) < 100)) {
+            throw new UnauthorizedResponse("You must be in the Financial department to approve or deny reimbursements.");
+        }
+        String reimbId = ctx.pathParam("reimb_id");
+        if (!(reimbursementService.getReimbursementById(reimbId).getEmail().equals(userService.getUserInfo(""+token.getBody().get("user_id")).getEmail()))) {
+            throw new UnauthorizedResponse("You cannot approve or deny your own reimbursement ticket.");
+        }
+        String status = ctx.queryParam("status");
+        boolean success = reimbursementService.updateReimbursementStatus(reimbId, status);
+        ctx.status(201);
+        ctx.json(success);
+    };
+
+    private Handler deleteUnresolvedReimbursement = (ctx) -> {
+        String jwt = ctx.header("Authorization").split(" ")[1];
+
+        Jws<Claims> token = this.jwtService.parseJwt(jwt);
+
+        String userId = ctx.pathParam("user_id");
+        if (!(""+token.getBody().get("user_id")).equals(userId)) {
+            throw new UnauthorizedResponse("You cannot edit a reimbursement that does not belong to you.");
+        }
+        String reimbId = ctx.pathParam("reimb_id");
+        if (!(reimbursementService.getReimbursementById(reimbId).getEmail().equals(userService.getUserInfo(userId).getEmail()))) {
+            throw new UnauthorizedResponse("You cannot edit a reimbursement that does not belong to you.");
+        }
+        boolean success = reimbursementService.deleteUnresolvedReimbursement(reimbId);
+        ctx.status(200);
+        ctx.json(success);
     };
 
 
@@ -65,10 +191,13 @@ public class ReimbursementController implements Controller{
         //C
         app.post("/users/{user_id}/reimbursements", addReimbursement);
         //R
-//        app.get("/users/{user_id}/reimbursements", getAllReimbursementsForUser); //?status=
-//        app.get("/reimbursements", getAllReimbursements); //?role=  ?status=
-//        app.get("/users/{user_id}/reimbursements/{reimb_id}", getSingleReimbursement);
+        app.get("/users/{user_id}/reimbursements", getAllReimbursementsForUser);
+        app.get("/reimbursements", getAllReimbursements);
+        app.get("/users/{user_id}/reimbursements/{reimb_id}", getReimbursementById);
         //U-Partial
+        app.put("/users/{user_id}/reimbursements/{reimb_id}", editUnresolvedReimbursement);
+        app.patch("/reimbursements/{reimb_id}", updateReimbursementStatus);
         //D
+        app.delete("/users/{user_id}/reimbursements/{reimb_id}", deleteUnresolvedReimbursement);
     }
 }

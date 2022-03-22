@@ -2,7 +2,7 @@ package com.revature.controller;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.api.client.http.HttpResponseException;
-import com.revature.exception.InvalidFileTypeException;
+import com.revature.exception.*;
 import io.javalin.Javalin;
 import io.javalin.http.ExceptionHandler;
 
@@ -10,6 +10,7 @@ import io.javalin.http.UnauthorizedResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jws.soap.SOAPBinding;
 import javax.naming.SizeLimitExceededException;
 import javax.security.auth.login.FailedLoginException;
 import java.io.IOException;
@@ -54,6 +55,35 @@ public class ExceptionController implements Controller{
         ctx.json(exception.getLocalizedMessage());
     });
 
+    private ExceptionHandler<IndexOutOfBoundsException> noFileUploaded = (((exception, ctx) -> {
+        logger.warn("User did not upload an image file.");
+        ctx.status(400);
+        ctx.json("You must upload an image of your receipt.");
+    }));
+
+    private ExceptionHandler<InvalidJsonBodyProvided> invalidJsonBody = (((exception, ctx) -> {
+        logger.warn("User provided invalid JSON body. Message: " + exception.getMessage());
+        ctx.status(400);
+        ctx.json(exception.getMessage());
+    }));
+
+    private ExceptionHandler<ReimbursementDoesNotExist> reimbursementNotFound = (((exception, ctx) -> {
+        logger.warn("User attempted to access a reimbursement that does not exist. Message: " + exception.getMessage());
+        ctx.status(404);
+        ctx.json(exception.getMessage());
+    }));
+
+    private ExceptionHandler<UserDoesNotExist> userNotFound = (((exception, ctx) -> {
+        logger.warn("User attempted to access a user that does not exist. Message: " + exception.getMessage());
+        ctx.status(404);
+        ctx.json(exception.getMessage());
+    }));
+
+    private ExceptionHandler<ReimbursementAlreadyResolved> reimbursementResolved = (((exception, ctx) -> {
+        logger.warn("User attempted to edit a reimbursement that has already been resolved. Message: " + exception.getMessage());
+        ctx.status(403);
+        ctx.json(exception.getMessage());
+    }));
 
     @Override
     public void mapEndpoints(Javalin app) {
@@ -63,5 +93,9 @@ public class ExceptionController implements Controller{
         app.exception(MismatchedInputException.class, invalidOrIncompleteBodySent);
         app.exception(SizeLimitExceededException.class, fileSizeTooLarge);
         app.exception(InvalidFileTypeException.class, invalidFileType);
+        app.exception(IndexOutOfBoundsException.class, noFileUploaded);
+        app.exception(ReimbursementDoesNotExist.class, reimbursementNotFound);
+        app.exception(UserDoesNotExist.class, userNotFound);
+        app.exception(ReimbursementAlreadyResolved.class, reimbursementResolved);
     }
 }

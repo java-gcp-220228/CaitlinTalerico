@@ -1,6 +1,7 @@
 package com.revature.dao;
 
 import com.revature.dto.LoginDTO;
+import com.revature.dto.UserDTO;
 import com.revature.model.User;
 import com.revature.model.UserRole;
 import com.revature.utility.ConnectionUtility;
@@ -15,7 +16,7 @@ public class UserDao {
 
     public User getUserByUsernameAndPassword(LoginDTO dto) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
-            String sql = "select u.user_id, u.username, u.first_name, u.last_name, u.user_email, ur.user_role_id, ur.user_role " +
+            String sql = "select u.user_id, u.first_name, u.last_name, u.username, u.user_email, ur.user_role_id, ur.user_role " +
                     "from users u " +
                     "inner join user_roles ur " +
                     "on ur.user_role_id = u.user_role_id " +
@@ -30,7 +31,7 @@ public class UserDao {
 
             if (rs.next()) { //login successful
                 int userId = rs.getInt("user_id");
-                String usName = rs.getString("username");
+                String username = rs.getString("username");
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
                 String email = rs.getString("user_email");
@@ -38,11 +39,44 @@ public class UserDao {
                 String role = rs.getString("user_role");
 
                 UserRole userRole = new UserRole(userRoleId, role);
-                return new User(userId, usName, firstName, lastName, email, userRole);
+                return new User(userId, username, firstName, lastName, email, userRole);
             }
 
 
             return null;
         }
+    }
+
+    public UserDTO getUserByUserId(int id) throws SQLException {
+
+        try(Connection con = ConnectionUtility.getConnection()) {
+            String sql = "SELECT * " +
+                    "FROM employees e " +
+                    "WHERE user_id = ?";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            pstmt.setInt(1, id);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) { //login successful
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("user_email");
+                int userRoleId = rs.getInt("user_role_id");
+                String role = rs.getString("user_role");
+
+                UserRole userRole = new UserRole(userRoleId, role);
+                return new UserDTO(id, firstName, lastName, email, userRole);
+            }
+
+
+            return null;
+
+            }
+
+
+
     }
 }

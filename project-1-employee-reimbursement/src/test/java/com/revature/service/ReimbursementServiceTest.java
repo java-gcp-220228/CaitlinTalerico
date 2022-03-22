@@ -49,7 +49,7 @@ public class ReimbursementServiceTest {
         when(reimbursementDao.addReimbursement(any(AddReimbursementDTO.class), any(String.class))).thenReturn(expected);
 
 
-        Reimbursement actual = reimbursementService.addReimbursement(new AddReimbursementDTO());
+        //Reimbursement actual = reimbursementService.addReimbursement(new AddReimbursementDTO());
         Assertions.assertEquals(expected, actual);
     }
 }
