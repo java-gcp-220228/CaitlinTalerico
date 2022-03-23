@@ -85,6 +85,12 @@ public class ExceptionController implements Controller{
         ctx.json(exception.getMessage());
     }));
 
+    private ExceptionHandler<InvalidQueryParamProvided> invalidQueryParam = (((exception, ctx) -> {
+        logger.warn("User attempted to provide an invalid value to a Query Parameter. Message: " + exception.getMessage());
+        ctx.status(400);
+        ctx.json(exception.getMessage());
+    }));
+
     @Override
     public void mapEndpoints(Javalin app) {
         app.exception(FailedLoginException.class, failedLogin);
@@ -97,5 +103,6 @@ public class ExceptionController implements Controller{
         app.exception(ReimbursementDoesNotExist.class, reimbursementNotFound);
         app.exception(UserDoesNotExist.class, userNotFound);
         app.exception(ReimbursementAlreadyResolved.class, reimbursementResolved);
+        app.exception(InvalidQueryParamProvided.class, invalidQueryParam);
     }
 }

@@ -4,10 +4,7 @@ import com.revature.dao.ReimbursementDao;
 import com.revature.dto.AddReimbursementDTO;
 import com.revature.dto.ResponseReimbursementDTO;
 import com.revature.dto.UpdateReimbursementDTO;
-import com.revature.exception.InvalidFileTypeException;
-import com.revature.exception.InvalidJsonBodyProvided;
-import com.revature.exception.ReimbursementAlreadyResolved;
-import com.revature.exception.ReimbursementDoesNotExist;
+import com.revature.exception.*;
 import com.revature.model.Reimbursement;
 import com.revature.utility.UploadImageUtility;
 import io.javalin.http.NotFoundResponse;
@@ -84,7 +81,7 @@ public class ReimbursementService {
         }
     }
 
-    public List<ResponseReimbursementDTO> getReimbursementsByUserAndStatus(String userId, String currentStatus) throws SQLException, InvalidJsonBodyProvided {
+    public List<ResponseReimbursementDTO> getReimbursementsByUserAndStatus(String userId, String currentStatus) throws SQLException, InvalidQueryParamProvided {
         try {
             int uId = Integer.parseInt(userId);
             String status = validateStatus(currentStatus);
@@ -94,16 +91,16 @@ public class ReimbursementService {
         }
     }
 
-    public List<ResponseReimbursementDTO> getReimbursementsByDepartment(String department) throws SQLException, InvalidJsonBodyProvided {
+    public List<ResponseReimbursementDTO> getReimbursementsByDepartment(String department) throws SQLException, InvalidQueryParamProvided {
         String dept = validateDepartment(department);
         return reimbursementDao.getReimbursementsByDepartment(dept);
     }
-    public List<ResponseReimbursementDTO> getAllReimbursementsByStatus(String status) throws SQLException, InvalidJsonBodyProvided {
+    public List<ResponseReimbursementDTO> getAllReimbursementsByStatus(String status) throws SQLException, InvalidQueryParamProvided {
         String stat = validateStatus(status);
         return reimbursementDao.getAllReimbursementsByStatus(stat);
     }
 
-    public List<ResponseReimbursementDTO> getAllReimbursementsByStatusAndDepartment(String status, String department) throws SQLException, InvalidJsonBodyProvided {
+    public List<ResponseReimbursementDTO> getAllReimbursementsByStatusAndDepartment(String status, String department) throws SQLException, InvalidQueryParamProvided {
         String dept = validateDepartment(department);
         String stat = validateStatus(status);
 
@@ -114,56 +111,51 @@ public class ReimbursementService {
         return reimbursementDao.getAllReimbursements();
     }
 
-    public Reimbursement editUnresolvedReimbursement(String reimbId, UpdateReimbursementDTO dto) throws SQLException, ReimbursementAlreadyResolved {
-        try {
-            int rId = Integer.parseInt(reimbId);
-            if (!(reimbursementDao.getReimbursementById(rId).getStatus().equals("Pending"))) {
-                throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
-            }
-            return reimbursementDao.editUnresolvedReimbursement(rId, dto);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid integer for reimbursement id.");
+    public Reimbursement editUnresolvedReimbursement(String reimbId, UpdateReimbursementDTO dto) throws SQLException, ReimbursementAlreadyResolved, ReimbursementDoesNotExist {
+
+        if (!(getReimbursementById(reimbId).getStatus().equals("Pending"))) {
+            throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
         }
+        int rId = Integer.parseInt(reimbId);
+        return reimbursementDao.editUnresolvedReimbursement(rId, dto);
+
     }
 
-    public boolean updateReimbursementStatus(String reimbId, String statId) throws SQLException, ReimbursementAlreadyResolved {
-        try {
-            int rId = Integer.parseInt(reimbId);
-            int statusId = Integer.parseInt(statId);
-            if(!(reimbursementDao.getReimbursementById(rId).getStatus().equals("Pending"))) {
-                throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
-            }
-            return reimbursementDao.updateReimbursementStatus(rId, statusId);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid integer for reimbursement id.");
+    public boolean updateReimbursementStatus(String reimbId, String statId) throws SQLException, ReimbursementAlreadyResolved, ReimbursementDoesNotExist, InvalidQueryParamProvided {
+
+        if(!(getReimbursementById(reimbId).getStatus().equals("Pending"))) {
+            throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
         }
+        int rId = Integer.parseInt(reimbId);
+        int statusId = Integer.parseInt(statId);
+        if (!(statusId == 101 || statusId == 303)) {
+            throw new InvalidQueryParamProvided("Invalid statusId provided for update.");
+        }
+        return reimbursementDao.updateReimbursementStatus(rId, statusId);
     }
 
-    public boolean deleteUnresolvedReimbursement(String reimbId) throws SQLException, ReimbursementAlreadyResolved {
-        try {
-            int rId = Integer.parseInt(reimbId);
-            if(!(reimbursementDao.getReimbursementById(rId).getStatus().equals("Pending"))) {
-                throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
-            }
-            return reimbursementDao.deleteUnresolvedReimbursement(rId);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid integer for reimbursement id.");
+    public boolean deleteUnresolvedReimbursement(String reimbId) throws SQLException, ReimbursementAlreadyResolved, ReimbursementDoesNotExist {
+
+        if(!(getReimbursementById(reimbId).getStatus().equals("Pending"))) {
+            throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
         }
+        int rId = Integer.parseInt(reimbId);
+        return reimbursementDao.deleteUnresolvedReimbursement(rId);
     }
 
-    public String validateDepartment(String department) throws InvalidJsonBodyProvided {
+    public String validateDepartment(String department) throws InvalidQueryParamProvided {
         String dept = department.toLowerCase();
         if (!(dept.equals("management") || dept.equals("finance")  || dept.equals("hr") || dept.equals("it") || dept.equals("marketing") || dept.equals("sales") || dept.equals("quality assurance"))) {
-            throw new InvalidJsonBodyProvided("Provided department is not a valid department. Input: " + department);
+            throw new InvalidQueryParamProvided("Provided department is not a valid department. Input: " + department);
         }
 
         return dept.substring(0, 1).toUpperCase() + dept.substring(1);
     }
 
-    public String validateStatus(String status) throws InvalidJsonBodyProvided {
+    public String validateStatus(String status) throws InvalidQueryParamProvided {
         String stat = status.toLowerCase();
         if (!(stat.equals("pending") || stat.equals("approved") || stat.equals("rejected")))  {
-            throw new InvalidJsonBodyProvided("Provided status is not a valid status. Input: " + status);
+            throw new InvalidQueryParamProvided("Provided status is not a valid status. Input: " + status);
         }
         return stat.substring(0, 1).toUpperCase() + stat.substring(1);
     }
