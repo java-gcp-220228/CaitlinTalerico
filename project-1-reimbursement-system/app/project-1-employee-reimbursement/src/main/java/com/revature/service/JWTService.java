@@ -14,7 +14,6 @@ import java.security.Key;
 
 
 public class JWTService {
-    Logger logger = LoggerFactory.getLogger(JWTService.class);
 
     private Key key;
     public JWTService() {
@@ -39,10 +38,8 @@ public class JWTService {
 
             return token;
         } catch(SignatureException e) {
-            e.getMessage();
             throw new UnauthorizedResponse("Invalid JWT\n" + e.getMessage());
         } catch(JwtException e) {
-            e.printStackTrace();
             throw new UnauthorizedResponse("Invalid JWT\n" + e.getMessage());
         }
     }

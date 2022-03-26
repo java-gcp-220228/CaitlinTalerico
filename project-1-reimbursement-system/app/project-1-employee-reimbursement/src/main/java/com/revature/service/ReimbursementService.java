@@ -1,5 +1,6 @@
 package com.revature.service;
 
+import com.revature.controller.ExceptionController;
 import com.revature.dao.ReimbursementDao;
 import com.revature.dto.AddReimbursementDTO;
 import com.revature.dto.ResponseReimbursementDTO;
@@ -9,6 +10,8 @@ import com.revature.exception.*;
 import com.revature.model.Reimbursement;
 import com.revature.utility.UploadImageUtility;
 import io.javalin.http.UploadedFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.SizeLimitExceededException;
 import java.io.IOException;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class ReimbursementService {
+    Logger logger = LoggerFactory.getLogger(ReimbursementService.class);
 
 
     private final ReimbursementDao reimbursementDao;
@@ -53,7 +57,7 @@ public class ReimbursementService {
 
 
         // Add the reimbursement
-
+        logger.info("User " + dto.getReimbAuthor() + " added a reimbursement.");
         return reimbursementDao.addReimbursement(sanitizedDto, url);
     }
 
@@ -65,6 +69,7 @@ public class ReimbursementService {
             if (reimbursement == null) {
                 throw new ReimbursementDoesNotExist("A reimbursement with an id of " + rId + " does not exist at this time.");
             }
+            logger.info("User requested reimbursement of id " + reimbId + ".");
             return reimbursement;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid integer given for request.");
@@ -74,6 +79,7 @@ public class ReimbursementService {
     public List<ResponseReimbursementDTO> getReimbursementsByUser(String userId) throws SQLException {
         try {
             int uId = Integer.parseInt(userId);
+            logger.info("User requested all reimbursements for " + userId + ".");
             return reimbursementDao.getReimbursementsByUser(uId);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid integer given for request.");
@@ -84,6 +90,7 @@ public class ReimbursementService {
         try {
             int uId = Integer.parseInt(userId);
             String status = validateStatus(currentStatus);
+            logger.info("User requested all " + status + " reimbursements for user " + userId + ".");
             return reimbursementDao.getReimbursementsByUserAndStatus(uId, status);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid integer given for the request.");
@@ -92,10 +99,12 @@ public class ReimbursementService {
 
     public List<ResponseReimbursementDTO> getReimbursementsByDepartment(String department) throws SQLException, InvalidQueryParamProvided {
         String dept = validateDepartment(department);
+        logger.info("User requested all reimbursements for the " + dept + " department.");
         return reimbursementDao.getReimbursementsByDepartment(dept);
     }
     public List<ResponseReimbursementDTO> getAllReimbursementsByStatus(String status) throws SQLException, InvalidQueryParamProvided {
         String stat = validateStatus(status);
+        logger.info("User requested all " + stat +" reimbursements.");
         return reimbursementDao.getAllReimbursementsByStatus(stat);
     }
 
@@ -103,10 +112,12 @@ public class ReimbursementService {
         String dept = validateDepartment(department);
         String stat = validateStatus(status);
 
+        logger.info("User requested all " + stat + "reimbursements from the " + dept + " department.");
         return reimbursementDao.getAllReimbursementsByStatusAndDepartment(stat, dept);
     }
 
     public List<ResponseReimbursementDTO> getAllReimbursements() throws SQLException {
+        logger.info("User requested all reimbursements.");
         return reimbursementDao.getAllReimbursements();
     }
 
@@ -117,6 +128,7 @@ public class ReimbursementService {
         }
         int rId = Integer.parseInt(reimbId);
         UpdateReimbursementDTO sanitizedDto = sanitizeUpdateReimbursement(dto);
+        logger.info("User edited reimbursement with an id of " + reimbId + ".");
         return reimbursementDao.editUnresolvedReimbursement(rId, sanitizedDto);
 
     }
@@ -133,6 +145,7 @@ public class ReimbursementService {
         TimeZone.setDefault(TimeZone.getTimeZone("EST"));
         Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
         dto.setTimestamp(submitted);
+        logger.info("User updated the status of reimbursement with an id of " + reimbId + " to " + dto.getStatusId() + ".");
         return reimbursementDao.updateReimbursementStatus(dto, rId);
     }
 
@@ -142,6 +155,7 @@ public class ReimbursementService {
             throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
         }
         int rId = Integer.parseInt(reimbId);
+        logger.info("User deleted a reimbursement with an id of " + rId + ".");
         return reimbursementDao.deleteUnresolvedReimbursement(rId);
     }
 
