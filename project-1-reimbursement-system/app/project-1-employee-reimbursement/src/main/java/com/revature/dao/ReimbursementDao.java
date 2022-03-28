@@ -105,7 +105,7 @@ public class ReimbursementDao {
             Date resolveDate = rs.getTimestamp("reimb_resolved");
             String resolveDateString;
             if (resolveDate != null) {
-                resolveDateString = new Date(rs.getTimestamp("reimb_submitted").getTime()).toString();
+                resolveDateString = new Date(rs.getTimestamp("reimb_resolved").getTime()).toString();
             } else {
                 resolveDateString = null;
             }

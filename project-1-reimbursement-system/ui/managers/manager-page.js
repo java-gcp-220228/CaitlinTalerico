@@ -162,6 +162,7 @@ async function openModal(reimbursement) {
     let resolveTime = document.querySelector(".resolved-timestamp");
     let resolverName = document.querySelector(".resolver-name");
     let resolverContact = document.querySelector(".resolver-contact");
+    console.log(reimbursement.submitTimestamp);
     console.log(reimbursement.resolveTimestamp);
     if (reimbursement.resolveTimestamp) {
         try {
