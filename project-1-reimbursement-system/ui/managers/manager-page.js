@@ -162,16 +162,15 @@ async function openModal(reimbursement) {
     let resolveTime = document.querySelector(".resolved-timestamp");
     let resolverName = document.querySelector(".resolver-name");
     let resolverContact = document.querySelector(".resolver-contact");
-    if (reimbursement.resolveTimestamp == null) {
-        resolveTime.innerText = "-------------";
-        resolverName.innerText = "-------------";
-        resolverContact.innerText = "------------";
-    } else {
+    console.log(reimbursement.resolveTimestamp);
+    if (reimbursement.resolveTimestamp) {
         try {
             const URL = `http://localhost:8081/users/${reimbursement.resolverId}`
             let res = await fetch(URL, {
                 method: 'GET',
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                }
             });
             if (res.status === 200) {
                 let user = await res.json();
@@ -182,6 +181,11 @@ async function openModal(reimbursement) {
             console.log(e);
         }
         resolveTime.innerText = reimbursement.resolveTimestamp;
+       
+    } else {
+        resolveTime.innerText = "---------------";
+        resolverName.innerText = "---------------";
+        resolverContact.innerText = "---------------";
     }
 
 

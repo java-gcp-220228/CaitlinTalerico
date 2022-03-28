@@ -130,11 +130,7 @@ async function openDetailsModal(reimbursement) {
     let resolveTime = document.querySelector(".resolved-timestamp");
     let resolverName = document.querySelector(".resolver-name");
     let resolverContact = document.querySelector(".resolver-contact");
-    if (reimbursement.resolveTimestamp == null) {
-        resolveTime.innerText = "-------------";
-        resolverName.innerText = "-------------";
-        resolverContact.innerText = "------------";
-    } else {
+    if (reimbursement.resolveTimestamp ) {
         const urlUser = `http://localhost:8081/users/${reimbursement.resolverId}`;
 
         let response = await fetch(urlUser, {
@@ -150,7 +146,11 @@ async function openDetailsModal(reimbursement) {
         }
         resolveTime.innerText = reimbursement.resolveTimestamp;
         resolverName.innerText = `${userInfo.firstName} ${userInfo.lastName}`;
-        resolverContact.innerText = userInfo.email;
+        resolverContact.innerText = userInfo.email;  
+    } else {
+        resolveTime.innerText = "---------------";
+        resolverName.innerText = "---------------";
+        resolverContact.innerText = "---------------";
     }
 
 
