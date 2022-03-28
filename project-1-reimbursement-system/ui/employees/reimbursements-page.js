@@ -2,22 +2,22 @@
 let logoutBtn = document.querySelector("#logout-btn");
 
 logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('user_role_id');
-    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('user_name');
     localStorage.removeItem('jwt');
 
     window.location = '../index.html';
 });
 
 let welcomeText = document.querySelector('#welcome-tag');
-welcomeText.innerText = `Welcome back, ${localStorage.get('user_name')}!`;
-
+welcomeText.innerText = `Welcome back, ${localStorage.getItem('user_name')}!`;
 window.addEventListener('load', (event) => {
     populateReimbursementsTable();
 });
 
 let filterBtn = document.querySelector("#filter-status");
 filterBtn.addEventListener('click', populateReimbursementsTable);
+
 
 async function populateReimbursementsTable() {
     let filter = document.querySelector("#ticket-filter").value;
@@ -200,12 +200,10 @@ function openFormModal() {
     amountInput.value = 0;
     imageInput.value="";
 
-    let span = document.querySelector(".close");
+    let span = document.querySelector("#submit-form-modal .close");
 
     modal.style.display = "block";
-    span.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
+    
 
     window.addEventListener('click', (event) => {
         if (event.target == modal) {
@@ -237,7 +235,10 @@ function openFormModal() {
         } catch (e) {
             console.log(e);
         }
-    })
+    });
+    span.addEventListener('click', () => {
+        modal.style.display = "none";
+    });
 
 }
 

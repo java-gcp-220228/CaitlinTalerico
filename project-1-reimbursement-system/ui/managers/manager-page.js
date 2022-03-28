@@ -2,8 +2,8 @@
 let logoutBtn = document.querySelector("#logout-btn");
 
 logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('user_role_id');
-    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('user_name');
     localStorage.removeItem('jwt');
 
     window.location = '../index.html';
@@ -140,7 +140,7 @@ async function populateReimbursementsTable() {
     }
 }
 
-function openModal(reimbursement) {
+async function openModal(reimbursement) {
     let modal = document.querySelector("#ticket-modal");
 
     let span = document.querySelector(".close");
@@ -153,17 +153,35 @@ function openModal(reimbursement) {
     let submitTime = document.querySelector(".submit-timestamp");
     submitTime.innerText = reimbursement.submitTimestamp;
 
+    let submitterName = document.querySelector(".submitter-name");
+    submitterName.innerText = `${reimbursement.firstName} ${reimbursement.lastName}`
+    let submitterContact = document.querySelector(".submitter-contact");
+    submitterContact.innerText = reimbursement.email;
+
+
     let resolveTime = document.querySelector(".resolved-timestamp");
-    let resolverName = document.querySelector(".submitter-name");
-    let resolverContact = document.querySelector(".submitter-contact");
+    let resolverName = document.querySelector(".resolver-name");
+    let resolverContact = document.querySelector(".resolver-contact");
     if (reimbursement.resolveTimestamp == null) {
         resolveTime.innerText = "-------------";
         resolverName.innerText = "-------------";
         resolverContact.innerText = "------------";
     } else {
+        try {
+            const URL = `http://localhost:8081/users/${reimbursement.resolverId}`
+            let res = await fetch(URL, {
+                method: 'GET',
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+            });
+            if (res.status === 200) {
+                let user = await res.json();
+                resolverName.innerText = `${user.firstName} ${user.lastName}`;
+                resolverContact.innerText = user.email;
+            }
+        } catch (e) {
+            console.log(e);
+        }
         resolveTime.innerText = reimbursement.resolveTimestamp;
-        resolverName.innerText = `${reimbursement.firstName} ${reimbursement.lastName}`;
-        resolverContact.innerText = reimbursement.email;
     }
 
 

@@ -1,3 +1,19 @@
+let isLoggedIn = localStorage.getItem('user_role');
+if(isLoggedIn) {
+    if (isLoggedIn >= 300) {
+        window.location.pathname = "../employees/reimbursements-page.html";
+    } else {
+        window.location.pathname = "../managers/manager-page.html";
+    }
+}
+
+
+let usernameText = document.querySelector("#username");
+let passwordText = document.querySelector("#password");
+
+usernameText.setAttribute("onKeyDown", "clearErrorMessage()");
+passwordText.setAttribute("onKeyDown", "clearErrorMessage()");
+
 let loginBtn = document.querySelector('#login-btn');
 
 loginBtn.addEventListener('click', async () => {
@@ -35,7 +51,7 @@ loginBtn.addEventListener('click', async () => {
         if (user.userRole.id < 300) {
             window.location.pathname = '../managers/manager-page.html';
         } else if (user.userRole.id >= 300) {
-            window.location = '../employees/reimbursements-page.html';
+            window.location.pathname = '../employees/reimbursements-page.html';
         }
     } else { // Invalid Login Error
         let errorMsg = await res.text();
@@ -45,4 +61,11 @@ loginBtn.addEventListener('click', async () => {
         errorElement.innerText = errorMsg;
         errorElement.style.color = 'red';
     }
-})
+});
+
+function clearErrorMessage() {
+    let errorElement = document.querySelector('#error-msg');
+    if (errorElement.innerText) {
+        errorElement.innerText = '';
+    }
+}

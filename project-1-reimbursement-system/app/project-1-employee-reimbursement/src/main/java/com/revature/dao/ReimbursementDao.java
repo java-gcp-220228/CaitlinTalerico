@@ -148,8 +148,6 @@ public class ReimbursementDao {
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
 
-            rs.next();
-
             List<ResponseReimbursementDTO> reimbursements = new ArrayList<>();
 
             while (rs.next()) {
