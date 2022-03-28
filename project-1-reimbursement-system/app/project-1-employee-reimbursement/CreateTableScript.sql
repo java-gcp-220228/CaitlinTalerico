@@ -1,8 +1,10 @@
-DROP TABLE IF EXISTS reimbursements;
-drop table if EXISTS users;
+DROP TABLE IF EXISTS reimbursements cascade;
+
 DROP TABLE IF EXISTS reimbursement_status;
 DROP TABLE IF EXISTS reimbursement_type;
-DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS user_roles cascade;
+drop table if EXISTS users;
+
 
 
 
