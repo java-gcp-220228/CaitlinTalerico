@@ -39,5 +39,3 @@ CREATE VIEW employees AS
 
 SELECT *
 FROM employees e;
-
-S

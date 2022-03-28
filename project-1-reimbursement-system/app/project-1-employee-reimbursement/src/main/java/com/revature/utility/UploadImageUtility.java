@@ -12,17 +12,26 @@ import java.io.IOException;
 
 public class UploadImageUtility {
     private static final String bucketName = System.getenv("bucket_name");
+    private static final String projectId = System.getenv("project_id");
+
+    public UploadImageUtility() {
+
+    }
 
     // Solution by Mani on StackOverflow
     //https://stackoverflow.com/questions/42893395/upload-image-to-google-cloud-storage-java
-    public static String uploadImage(UploadedFile uploadedFile) throws IOException {
+    public  String uploadImage(UploadedFile uploadedFile) throws IOException {
         Bucket bucket = getBucket(bucketName);
         Blob blob = bucket.create(uploadedFile.getFilename(), uploadedFile.getContent(), uploadedFile.getContentType());
 
         return "https://storage.googleapis.com/reimb-receipt-images/" + blob.getName();
     }
 
-    private static Bucket getBucket(String bucketName) throws IOException {
+    public boolean deleteImage(String imageName) {
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+        return storage.delete(bucketName, imageName);
+    }
+    private static Bucket getBucket(String bucketName) {
         try{
             GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(System.getenv("GOOGLE_APP_CREDENTIALS")))
                     .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));

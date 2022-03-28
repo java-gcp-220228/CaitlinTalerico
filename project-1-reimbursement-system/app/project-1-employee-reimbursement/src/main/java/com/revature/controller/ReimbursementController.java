@@ -13,7 +13,6 @@ import com.revature.service.UserService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.UnauthorizedResponse;
-import io.javalin.http.UploadedFile;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
@@ -49,15 +48,13 @@ public class ReimbursementController implements Controller{
         if(!(""+token.getBody().get("user_id")).equals(userId)) {
             throw new UnauthorizedResponse("You cannot add a reimbursement request for anyone but yourself.");
         }
-        UploadedFile uploadedImage = ctx.uploadedFiles().get(0);
-
 
         AddReimbursementDTO dto = new AddReimbursementDTO();
         dto.setReimbAmount(Double.parseDouble(ctx.formParam("amount")));
         dto.setReimbAuthor((Integer)token.getBody().get("user_id"));
         dto.setReimbDescription(ctx.formParam("description"));
         dto.setReimbType(Integer.parseInt(ctx.formParam("type")));
-        dto.setReimbReceiptImage(uploadedImage);
+        dto.setReimbReceiptImage(ctx.uploadedFiles().get(0));
         ResponseReimbursementDTO newReimbursement = reimbursementService.addReimbursement(dto);
         ctx.status(201);
         ctx.json(newReimbursement);
@@ -175,7 +172,7 @@ public class ReimbursementController implements Controller{
 
         Jws<Claims> token = this.jwtService.parseJwt(jwt);
         int userRoleId = (Integer) token.getBody().get("user_role_id");
-        if(!(userRoleId <= 300 && userRoleId >= 100)) {
+        if(!(userRoleId <= 300)) {
             throw new UnauthorizedResponse("You must be in the Financial department to approve or deny reimbursements.");
         }
         String reimbId = ctx.pathParam("reimb_id");
@@ -185,6 +182,7 @@ public class ReimbursementController implements Controller{
         UpdateReimbursementStatusDTO dto = ctx.bodyAsClass(UpdateReimbursementStatusDTO.class);
         dto.setResolverId((Integer) token.getBody().get("user_id"));
         boolean success = reimbursementService.updateReimbursementStatus(dto, reimbId);
+
         ctx.status(201);
         ctx.json(success);
     };

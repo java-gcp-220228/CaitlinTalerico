@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <nav>
@@ -13,6 +14,14 @@
     <h1 id="welcome-tag"></h1>
 
     <h2>Reimbursements</h2>
+    <label for="ticket-filter">Type: </label>
+    <select id="ticket-filter">
+        <option value="Any"></option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+    </select>
+    <button id="filter-status">Filter</button>
     <table id="reimbursement-tbl">
         <thead>
             <th>Status</th>
@@ -23,10 +32,67 @@
             <th>Details</th>
         </thead>
         <tbody>
-
+        
         </tbody>
     </table>
+    <div>
+        <button id="add-reimbursement-btn">Add Reimbursement</button>
+    </div>
+    <div id="ticket-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&boxtimes;</span>
+            <h2>Details</h2>
+            <h3>Status</h3>
+            <p class="status"></p>
+            <h3>Submitted</h3>
+            <p class="submit-timestamp"></p>
+            <h3>Resolved</h3>
+            <p class="resolved-timestamp"></p>
+            <h3>Resolver</h3>
+            <p class="resolver-name"></p>
+            <p class="resolver-contact"></p>
+            <h3>Description</h3>
+            <p class="description"></p>
+            <h3>Type</h3>
+            <p class="type"></p>
+            <h3>Receipt</h3>
+            <img alt="receipt-image">
+            <button id="delete-btn">Delete</button>
+        </div>
+    </div>
+    <div id="submit-form-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&boxtimes;</span>
+            <h2>Submit New Reimbursement</h2>
+            <div>
+                <label for="amount-input">Amount: </label>
+                <input type="number" id="amount-input" min="1" required>
+            </div>
+            <div>
+                <label for="ticket-type">Type: </label>
+                <select name="type" id="ticket-type" required>
+                    <option value="10">Lodging</option>
+                    <option value="20">Travel</option>
+                    <option value="30">Food</option>
+                    <option value="40">Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="textbox">Description</label>
+                <textarea name="description" id="textbox" cols="30" rows="5" required>
+                    Enter a brief description of the reimbursement.
+                </textarea>
+            </div>
+            <div>
+                <label for="image-file">Receipt Image (PNG, JPG, JPEG):</label>
+                <input type="file" name="image" id="image-file" required>
+            </div>
+            <button id="submit-btn">Submit</button>
+        </div>
         
+
+
+    </div>
     <script src="./reimbursements-page.js"></script>
 </body>
 </html>

@@ -2,6 +2,9 @@ package com.revature.service;
 
 import com.revature.dao.UserDao;
 import com.revature.dto.LoginDTO;
+import com.revature.dto.UserDTO;
+import com.revature.exception.InvalidQueryParamProvided;
+import com.revature.exception.UserDoesNotExist;
 import com.revature.model.User;
 import com.revature.model.UserRole;
 import org.junit.jupiter.api.*;
@@ -11,7 +14,10 @@ import org.mockito.MockitoAnnotations;
 
 import javax.security.auth.login.FailedLoginException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -63,6 +69,60 @@ public class UserServiceTest {
 
         Assertions.assertThrows(FailedLoginException.class, ()->{
             userService.login(dto);
+        });
+    }
+
+    @Test
+    public void testGetValidUserInfo() throws SQLException, UserDoesNotExist {
+        when(mockUserDao.getUserByUserId(anyInt())).thenReturn(new UserDTO());
+
+        UserDTO actual = userService.getUserInfo("1");
+        Assertions.assertEquals(UserDTO.class, actual.getClass());
+    }
+
+    @Test
+    public void testGetNonExistentUserInfo() throws SQLException {
+        when(mockUserDao.getUserByUserId(anyInt())).thenReturn(null);
+
+        Assertions.assertThrows(UserDoesNotExist.class, ()-> {
+            userService.getUserInfo("11");
+        });
+    }
+
+    @Test
+    public void testGetUserInfoInvalidUserId() {
+        Assertions.assertThrows(IllegalArgumentException.class, ()-> {
+            userService.getUserInfo("abc");
+        });
+    }
+
+    @Test
+    public void testGetAllUsers() throws SQLException {
+        List<UserDTO> users = new ArrayList<>();
+        for (int i =0; i< 5; i++) {
+            users.add(new UserDTO());
+        }
+        when(mockUserDao.getAllUsers()).thenReturn(users);
+
+        Assertions.assertEquals(5, userService.getAllUsers().size());
+    }
+
+    @Test
+    public void testGetAllUsersByDepartment() throws SQLException, InvalidQueryParamProvided {
+        List<UserDTO> users = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            users.add(new UserDTO());
+        }
+
+        when(mockUserDao.getAllUsersByDepartment("Finance")).thenReturn(users);
+
+        Assertions.assertEquals(5, userService.getAllUsersByDepartment("Finance").size());
+    }
+
+    @Test
+    public void testGetAllUsersByInvalidDepartment() {
+        Assertions.assertThrows(InvalidQueryParamProvided.class, ()->{
+            userService.getAllUsersByDepartment("Square");
         });
     }
 }

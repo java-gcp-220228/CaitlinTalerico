@@ -2,6 +2,7 @@ package com.revature.service;
 
 import com.revature.model.User;
 import com.revature.model.UserRole;
+import io.javalin.http.UnauthorizedResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.security.SignatureException;
@@ -44,7 +45,7 @@ public class JWTServiceTest {
         Object role = token.getBody().get("user_role_id");
 
         Assertions.assertEquals(user.getId(), id);
-        Assertions.assertEquals(user.getEmail(), username);
+        Assertions.assertEquals(user.getUsername(), username);
         Assertions.assertEquals(user.getUserRole().getId(), role);
     }
 
@@ -55,7 +56,7 @@ public class JWTServiceTest {
 
         String invalidJwt = jwt.substring(0, jwt.length() -2) + "@";
 
-        Assertions.assertThrows(SignatureException.class, () ->{
+        Assertions.assertThrows(UnauthorizedResponse.class, () ->{
            jwtService.parseJwt(invalidJwt);
         });
     }

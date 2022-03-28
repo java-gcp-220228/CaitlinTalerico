@@ -1,21 +1,29 @@
 package com.revature.service;
 
 import com.revature.dao.ReimbursementDao;
+import com.revature.dto.AddReimbursementDTO;
 import com.revature.dto.ResponseReimbursementDTO;
 import com.revature.dto.UpdateReimbursementDTO;
 import com.revature.dto.UpdateReimbursementStatusDTO;
 import com.revature.exception.*;
 import com.revature.model.Reimbursement;
 
+import com.revature.utility.UploadImageUtility;
+import io.javalin.http.UploadedFile;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
+import javax.naming.SizeLimitExceededException;
+import java.io.*;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -25,6 +33,9 @@ public class ReimbursementServiceTest {
 
     @Mock
     ReimbursementDao reimbursementDao;
+
+    @Mock
+    UploadImageUtility uploadImageUtility;
 
 
     @InjectMocks
@@ -41,19 +52,114 @@ public class ReimbursementServiceTest {
     }
 
 
-//    @Test
-//    public void testAddValidReimbursement() throws IOException, SQLException, SizeLimitExceededException, InvalidFileTypeException {
-//        Reimbursement expected = new Reimbursement();
-//        expected.setReceiptUrl("www.fake.com");
-//        UploadImageUtility spy = spy(new UploadImageUtility());
-//
-//        when(UploadImageUtility.uploadImage(any(UploadedFile.class))).thenReturn("www.fake.com");
-//        when(reimbursementDao.addReimbursement(any(AddReimbursementDTO.class), any(String.class))).thenReturn(expected);
-//
-//
-//        Reimbursement actual = reimbursementService.addReimbursement(new AddReimbursementDTO());
-//        Assertions.assertEquals(expected, actual);
-//    }
+    @Test
+    public void testAddValidReimbursement() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
+        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
+        Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
+
+        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+
+
+
+        UploadedFile mockFile = new UploadedFile(image, "image/png", "image", ".png", 1000);
+
+        ResponseReimbursementDTO expected = new ResponseReimbursementDTO();
+        expected.setStatus("Pending");
+
+        when(uploadImageUtility.uploadImage(mockFile)).thenReturn("www.fake.com");
+        when(reimbursementDao.addReimbursement(any(AddReimbursementDTO.class), any(String.class))).thenReturn(expected);
+
+        AddReimbursementDTO newReimbursement = new AddReimbursementDTO(100, submitted, "Description", mockFile, 1, 10);
+        ResponseReimbursementDTO actual = reimbursementService.addReimbursement(newReimbursement);
+        Assertions.assertEquals(expected.getStatus(), actual.getStatus());
+    }
+
+    @Test
+    public void testAddValidReimbursementTrimDescription() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
+        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
+        Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
+
+        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+
+
+
+        UploadedFile mockFile = new UploadedFile(image, "image/png", "image", ".png", 1000);
+
+        ResponseReimbursementDTO expected = new ResponseReimbursementDTO();
+        expected.setStatus("Pending");
+
+        when(uploadImageUtility.uploadImage(mockFile)).thenReturn("www.fake.com");
+        when(reimbursementDao.addReimbursement(any(AddReimbursementDTO.class), any(String.class))).thenReturn(expected);
+
+        AddReimbursementDTO newReimbursement = new AddReimbursementDTO(100, submitted, "          Description             ", mockFile, 1, 10);
+        ResponseReimbursementDTO actual = reimbursementService.addReimbursement(newReimbursement);
+        Assertions.assertEquals(expected.getStatus(), actual.getStatus());
+    }
+
+    @Test
+    public void testAddReimbursementInvalidImage() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
+        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
+        Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
+
+        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+
+
+
+        UploadedFile mockFile = new UploadedFile(image, "image/gif", "image", ".gif", 1000);
+
+        ResponseReimbursementDTO expected = new ResponseReimbursementDTO();
+        expected.setStatus("Pending");
+
+        when(reimbursementDao.addReimbursement(any(AddReimbursementDTO.class), any(String.class))).thenReturn(expected);
+
+        AddReimbursementDTO newReimbursement = new AddReimbursementDTO(100, submitted, "Description", mockFile, 1, 10);
+        Assertions.assertThrows(InvalidFileTypeException.class, () ->{
+            reimbursementService.addReimbursement(newReimbursement);
+        });
+    }
+
+    @Test
+    public void testAddReimbursementInvalidType() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
+        AddReimbursementDTO newReimbursement = new AddReimbursementDTO();
+        newReimbursement.setReimbAmount(100);
+        newReimbursement.setReimbDescription("Content");
+        newReimbursement.setReimbType(50);
+        Assertions.assertThrows(InvalidJsonBodyProvided.class, () ->{
+            reimbursementService.addReimbursement(newReimbursement);
+        });
+    }
+    @Test
+    public void testAddReimbursementNegativeAmount() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
+        AddReimbursementDTO newReimbursement = new AddReimbursementDTO();
+        newReimbursement.setReimbAmount(-100);
+        newReimbursement.setReimbDescription("Content");
+        newReimbursement.setReimbType(50);
+        Assertions.assertThrows(InvalidJsonBodyProvided.class, () ->{
+            reimbursementService.addReimbursement(newReimbursement);
+        });
+    }
+
+    @Test
+    public void testAddReimbursementImageSizeTooLarge() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
+        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
+        Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
+
+        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+
+
+
+        UploadedFile mockFile = new UploadedFile(image, "image/gif", "image", ".gif", 100000000);
+
+        ResponseReimbursementDTO expected = new ResponseReimbursementDTO();
+        expected.setStatus("Pending");
+
+        when(reimbursementDao.addReimbursement(any(AddReimbursementDTO.class), any(String.class))).thenReturn(expected);
+
+        AddReimbursementDTO newReimbursement = new AddReimbursementDTO(100, submitted, "Description", mockFile, 1, 10);
+        Assertions.assertThrows(SizeLimitExceededException.class, () ->{
+            reimbursementService.addReimbursement(newReimbursement);
+        });
+    }
 
     @Test
     public void getReimbursementByValidId() throws SQLException, ReimbursementDoesNotExist {
@@ -370,9 +476,11 @@ public class ReimbursementServiceTest {
     public void deleteUnresolvedReimbursement() throws SQLException, ReimbursementAlreadyResolved, ReimbursementDoesNotExist {
         Reimbursement mockReimbursement = new Reimbursement();
         mockReimbursement.setStatus("Pending");
+        mockReimbursement.setReceiptUrl("https://www.fake.com/images/receipt.png");
 
         when(reimbursementDao.getReimbursementById(anyInt())).thenReturn(mockReimbursement);
         when(reimbursementDao.deleteUnresolvedReimbursement(anyInt())).thenReturn(true);
+        when(uploadImageUtility.deleteImage(anyString())).thenReturn(true);
 
         Assertions.assertTrue(reimbursementService.deleteUnresolvedReimbursement("1"));
     }

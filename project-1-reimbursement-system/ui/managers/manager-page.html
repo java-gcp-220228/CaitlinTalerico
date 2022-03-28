@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
+    <link rel="stylesheet" href="../employees/style.css">
 </head>
 <body>
     <nav>
@@ -13,6 +14,32 @@
     <h1 id="welcome-tag"></h1>
 
     <h2>Reimbursements</h2>
+    <div id="filter-options">
+        <label for="department-filter">Department: </label>
+        <select id="department-filter">
+            <option value="Any">Any</option>
+            <option value="Management">Management</option>
+            <option value="Finance">Finance</option>
+            <option value="HR">HR</option>
+            <option value="IT">IT</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Sales">Sales</option>
+            <option value="Quality Assurance">Quality Assurance</option>
+        </select>
+        <span id="user-filter-box">
+            <label for="user-filter">User: </label>
+            <select id="user-filter">
+                <option value="Any">Any</option>
+            </select>
+        </span>
+        <label for="status-filter">Status: </label>
+        <select id="status-filter">
+            <option value="Any">Any</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
     <table id="reimbursement-tbl">
         <thead>
             <th>Status</th>
@@ -28,7 +55,31 @@
 
         </tbody>
     </table>
-        
+    <div id="ticket-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&boxtimes;</span>
+            <h2>Details</h2>
+            <h3>Status</h3>
+            <p class="status"></p>
+            <h3>Submitted</h3>
+            <p class="submit-timestamp"></p>
+            <h3>Resolved</h3>
+            <p class="resolved-timestamp"></p>
+            <h3>Submitted By</h3>
+            <p class="submitter-name"></p>
+            <p class="submitter-contact"></p>
+            <h3>Description</h3>
+            <p class="description"></p>
+            <h3>Type</h3>
+            <p class="type"></p>
+            <h3>Receipt</h3>
+            <img alt="receipt-image">
+            <div id="button-container">
+                <button id="approve-btn">Approve</button>
+                <button id="reject-btn">Reject</button>
+            </div>
+        </div>
+    </div>
     <script src="./manager-page.js"></script>
 </body>
 </html>

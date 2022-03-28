@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
     public UserDao(){}
@@ -20,12 +22,13 @@ public class UserDao {
                     "from users u " +
                     "inner join user_roles ur " +
                     "on ur.user_role_id = u.user_role_id " +
-                    "where u.username = ? and u.user_password = ?";
+                    "where u.username = ? and u.user_password = crypt(? , ?)";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, dto.getUsername());
             pstmt.setString(2, dto.getPassword());
+            pstmt.setString(3, System.getenv("salt"));
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -78,5 +81,62 @@ public class UserDao {
 
 
 
+    }
+
+    public List<UserDTO> getAllUsers() throws SQLException {
+        try(Connection con = ConnectionUtility.getConnection()) {
+            String sql = "SELECT * " +
+                    "FROM employees";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            List<UserDTO> users = new ArrayList<>();
+            while (rs.next()) { //login successful
+                int id = rs.getInt("user_id");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("user_email");
+                int userRoleId = rs.getInt("user_role_id");
+                String role = rs.getString("user_role");
+
+                UserRole userRole = new UserRole(userRoleId, role);
+                UserDTO user = new UserDTO(id, firstName, lastName, email, userRole);
+
+                users.add(user);
+
+            }
+            return users;
+        }
+    }
+    public List<UserDTO> getAllUsersByDepartment(String department) throws SQLException {
+        try(Connection con = ConnectionUtility.getConnection()) {
+            String sql = "SELECT * " +
+                    "FROM employees e " +
+                    "WHERE e.user_role = ?";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, department);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            List<UserDTO> users = new ArrayList<>();
+            while (rs.next()) { //login successful
+                int id = rs.getInt("user_id");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("user_email");
+                int userRoleId = rs.getInt("user_role_id");
+                String role = rs.getString("user_role");
+
+                UserRole userRole = new UserRole(userRoleId, role);
+                UserDTO user = new UserDTO(id, firstName, lastName, email, userRole);
+
+                users.add(user);
+
+            }
+            return users;
+        }
     }
 }

@@ -72,7 +72,7 @@ public class ReimbursementDao {
             String type = rsNewReimb.getString("reimb_type");
             String status = rsNewReimb.getString("reimb_status");
 
-            String urlDetails = "http://localhost:8080/users/" + addReimbursementDTO.getReimbAuthor() + "/reimbursements/" + id;
+            String urlDetails = "http://localhost:8081/users/" + addReimbursementDTO.getReimbAuthor() + "/reimbursements/" + id;
 
 
             ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date, description, firstName, lastName, status, type, urlDetails);
@@ -162,7 +162,7 @@ public class ReimbursementDao {
                 String type = rs.getString("reimb_type");
                 String status = rs.getString("reimb_status");
 
-                String urlDetails = "http://localhost:8080/users/" + userId + "/reimbursements/" + id;
+                String urlDetails = "http://localhost:8081/users/" + userId + "/reimbursements/" + id;
 
 
                 ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date, description, firstName, lastName, status, type, urlDetails);
@@ -206,7 +206,7 @@ public class ReimbursementDao {
                 String type = rs.getString("reimb_type");
                 String status = rs.getString("reimb_status");
 
-                String urlDetails = "http://localhost:8080/users/" + userId + "/reimbursements/" + id;
+                String urlDetails = "http://localhost:8081/users/" + userId + "/reimbursements/" + id;
 
 
                 ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date,  description, firstName, lastName, status, type, urlDetails);
@@ -238,7 +238,7 @@ public class ReimbursementDao {
                 String status = rs.getString("reimb_status");
                 int userId = rs.getInt("user_id");
 
-                String urlDetails = "http://localhost:8080/users/" + userId + "/reimbursements/" + id;
+                String urlDetails = "http://localhost:8081/users/" + userId + "/reimbursements/" + id;
 
 
                 ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date, description, firstName, lastName, status, type, urlDetails);
@@ -272,7 +272,7 @@ public class ReimbursementDao {
 
                 int userId = rs.getInt("user_id");
 
-                String urlDetails = "http://localhost:8080/users/" + userId + "/reimbursements/" + id;
+                String urlDetails = "http://localhost:8081/users/" + userId + "/reimbursements/" + id;
 
 
                 ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date, description, firstName, lastName, status, type, urlDetails);
@@ -307,7 +307,7 @@ public class ReimbursementDao {
                 String type = rs.getString("reimb_type");
 
                 int userId = rs.getInt("user_id");
-                String urlDetails = "http://localhost:8080/users/" + userId + "/reimbursements/" + id;
+                String urlDetails = "http://localhost:8081/users/" + userId + "/reimbursements/" + id;
 
                 ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date, description, firstName, lastName, status, type, urlDetails);
                 reimbursements.add(reimbursement);
@@ -341,7 +341,7 @@ public class ReimbursementDao {
                 String lastName = rs.getString("last_name");
                 String type = rs.getString("reimb_type");
                 int userId = rs.getInt("user_id");
-                String urlDetails = "http://localhost:8080/users/" + userId + "/reimbursements/" + id;
+                String urlDetails = "http://localhost:8081/users/" + userId + "/reimbursements/" + id;
 
 
                 ResponseReimbursementDTO reimbursement = new ResponseReimbursementDTO(id, amount, date, description, firstName, lastName, status, type, urlDetails);

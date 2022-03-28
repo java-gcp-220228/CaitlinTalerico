@@ -8,16 +8,48 @@ logoutBtn.addEventListener('click', () => {
 
     window.location = '../index.html';
 });
+let filterDepartment = document.querySelector('#department-filter');
+filterDepartment.onchange = function(){defineUserFilter(filterDepartment.value)};
+
+let filterUser = document.querySelector('#user-filter');
+filterUser.onchange = populateReimbursementsTable;
+
+let filterStatus = document.querySelector('#status-filter');
+filterStatus.onchange = populateReimbursementsTable;
 
 let welcomeText = document.querySelector('#welcome-tag');
-welcomeText.innerText = `Welcome back!`;
+welcomeText.innerText = `Welcome back, ${localStorage.getItem('user_name')}!`;
 
 window.addEventListener('load', (event) => {
+
     populateReimbursementsTable();
 });
 
 async function populateReimbursementsTable() {
-    const URL = 'http://localhost:8081/reimbursements';
+    let filterDepartment = document.querySelector('#department-filter');
+
+    let filterUser = document.querySelector('#user-filter');
+
+    let filterStatus = document.querySelector('#status-filter');
+    
+    let URL;
+
+    if (filterDepartment.value == "Any" && filterStatus.value == "Any" && filterUser.value == "Any") {
+        URL = 'http://localhost:8081/reimbursements';
+    } else if (filterDepartment.value != "Any" && filterStatus.value == "Any" && filterUser.value == "Any") {
+        URL = `http://localhost:8081/reimbursements?department=${filterDepartment.value}`;
+    } else if (filterDepartment.value != "Any" && filterStatus.value != "Any" && filterUser.value == "Any") {
+        URL = `http://localhost:8081/reimbursements?department=${filterDepartment.value}&status=${filterStatus.value}`;
+    } else if (filterStatus.value != "Any" && filterUser.value != "Any") {
+        URL = `http://localhost:8081/users/${filterUser.value}/reimbursements?status=${filterStatus.value}`;
+    } else if (filterUser.value != "Any") {
+        URL = `http://localhost:8081/users/${filterUser.value}/reimbursements`;
+    } else if (filterStatus.value != "Any") {
+        URL = `http://localhost:8081/reimbursements?status=${filterStatus.value}`;
+    } else if (filterDepartment.value != "Any") {
+        URL = `http://reimbursements?department=${filterDepartment.value}`;
+    }
+
 
     let res = await fetch(URL, {
         method: 'GET',
@@ -37,9 +69,9 @@ async function populateReimbursementsTable() {
             let tr = document.createElement('tr');
 
             let td1 = document.createElement('td');
-            if (ticket.status === "Pending") {
+            if (ticket.status == "Pending") {
                 td1.innerText = "⏳";
-            } else if (ticket.staus === "Approved") {
+            } else if (ticket.status == "Approved") {
                 td1.innerText = "✔";
                 td1.setAttribute("color", "green");
             } else {
@@ -83,7 +115,165 @@ async function populateReimbursementsTable() {
             tr.appendChild(td8);
 
             tbody.appendChild(tr);
+
+            aUrl.addEventListener('click', async() => {
+                try {
+                    let res2 = await fetch(ticket.urlDetails, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+                        }
+                    });
+
+                    if (res2.status === 200) {
+                        let reimbursement = await res2.json();
+
+                        openModal(reimbursement);
+                    }
+
+                } catch (e) {
+                    console.log(e);
+                }
+            });
                 
         }
     }
+}
+
+function openModal(reimbursement) {
+    let modal = document.querySelector("#ticket-modal");
+
+    let span = document.querySelector(".close");
+
+    modal.style.display = "block";
+
+    let status = document.querySelector(".status");
+    status.innerText = reimbursement.status;
+
+    let submitTime = document.querySelector(".submit-timestamp");
+    submitTime.innerText = reimbursement.submitTimestamp;
+
+    let resolveTime = document.querySelector(".resolved-timestamp");
+    let resolverName = document.querySelector(".submitter-name");
+    let resolverContact = document.querySelector(".submitter-contact");
+    if (reimbursement.resolveTimestamp == null) {
+        resolveTime.innerText = "-------------";
+        resolverName.innerText = "-------------";
+        resolverContact.innerText = "------------";
+    } else {
+        resolveTime.innerText = reimbursement.resolveTimestamp;
+        resolverName.innerText = `${reimbursement.firstName} ${reimbursement.lastName}`;
+        resolverContact.innerText = reimbursement.email;
+    }
+
+
+    let description = document.querySelector(".description");
+    description.innerText = reimbursement.description;
+
+    let type = document.querySelector(".type");
+    type.innerText = reimbursement.type;
+
+    let image = document.querySelector(".modal-content img");
+    image.setAttribute("src", reimbursement.receiptUrl);
+
+    let approveBtn = document.querySelector("#approve-btn");
+    let rejectBtn = document.querySelector("#reject-btn");
+    if (reimbursement.status == "Pending" && (`${reimbursement.firstName} ${reimbursement.lastName}` != localStorage.getItem('user_name'))) {
+        approveBtn.disabled = false;
+        rejectBtn.disabled = false;
+        approveBtn.style.display = "block";
+        rejectBtn.style.display = "block";
+        
+        approveBtn.addEventListener('click', function() {updateRequestStatus(reimbursement.id, 101)});
+        rejectBtn.addEventListener('click', function() {updateRequestStatus(reimbursement.id, 303)});
+
+    } else {
+        approveBtn.disabled = true;
+        approveBtn.style.display = "none";
+        rejectBtn.disabled = true;
+        rejectBtn.style.display = "none"; 
+    }
+
+    span.addEventListener('click', () => {
+        modal.style.display = "none";
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    });
+}
+
+async function updateRequestStatus(reimbId, statusId) {
+    const url = `http://localhost:8081/reimbursements/${reimbId}`;
+
+    const jsonString = JSON.stringify({
+        "resolverId": null,
+        "statusId": statusId,
+        "timestamp": null
+    });
+
+    try{
+        let res = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
+        body: jsonString
+        });
+        if(res.status === 201) {
+            let modal = document.querySelector("#ticket-modal");
+            modal.style.display = "none";
+            populateReimbursementsTable();
+        }
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+async function defineUserFilter(department) {
+    let URL;
+    if (department == "Any") {
+        URL = `http://localhost:8081/users`;
+        
+    } else {
+        URL = `http://localhost:8081/users?department=${department}`;
+    }
+    let selectSpanBox = document.querySelector("#user-filter-box");
+    while (selectSpanBox.lastChild) {
+        selectSpanBox.removeChild(selectSpanBox.lastChild);
+    }
+    let label = document.createElement('label');
+    label.setAttribute('for', 'user-filter');
+    label.innerText = 'User: ';
+    selectSpanBox.appendChild(label);
+    let selectBox = document.createElement('select');
+    selectBox.setAttribute('id', 'user-filter');
+    selectSpanBox.appendChild(selectBox);
+    let option = document.createElement('option');
+    option.setAttribute('value', 'Any');
+    option.innerText = 'Any';
+    selectBox.appendChild(option);
+    try{
+        let res = await fetch(URL, {
+            method: 'GET'
+        });
+
+        if (res.status === 200) {
+            let users = await res.json();
+
+            for (let user of users) {
+                let userOption = document.createElement('option');
+                userOption.setAttribute('value', `${user.id}`);
+                userOption.innerText = `${user.firstName} ${user.lastName}`;
+                selectBox.appendChild(userOption);
+            }
+            selectBox.onchange = populateReimbursementsTable;
+            populateReimbursementsTable();
+        }
+    } catch (e) {
+        console.log(e);
+    }
+
 }

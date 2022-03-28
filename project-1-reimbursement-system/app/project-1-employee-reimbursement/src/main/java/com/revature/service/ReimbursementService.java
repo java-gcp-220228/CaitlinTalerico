@@ -1,6 +1,5 @@
 package com.revature.service;
 
-import com.revature.controller.ExceptionController;
 import com.revature.dao.ReimbursementDao;
 import com.revature.dto.AddReimbursementDTO;
 import com.revature.dto.ResponseReimbursementDTO;
@@ -26,13 +25,16 @@ public class ReimbursementService {
 
 
     private final ReimbursementDao reimbursementDao;
+    private final UploadImageUtility uploadImageUtility;
 
     public ReimbursementService() {
         this.reimbursementDao = new ReimbursementDao();
+        this.uploadImageUtility = new UploadImageUtility();
 
     }
-    public ReimbursementService(ReimbursementDao mockDao) {
+    public ReimbursementService(ReimbursementDao mockDao, UploadImageUtility mockUploadImageUtility) {
         this.reimbursementDao = mockDao;
+        this.uploadImageUtility = mockUploadImageUtility;
     }
 
     // C
@@ -53,7 +55,7 @@ public class ReimbursementService {
             throw new InvalidFileTypeException("Invalid file type for uploaded image. Accepted files: .png .jpg .jpeg");
         }
 
-        String url = UploadImageUtility.uploadImage(uploadedImage);
+        String url = uploadImageUtility.uploadImage(uploadedImage);
 
 
         // Add the reimbursement
@@ -128,9 +130,9 @@ public class ReimbursementService {
         }
         int rId = Integer.parseInt(reimbId);
         UpdateReimbursementDTO sanitizedDto = sanitizeUpdateReimbursement(dto);
+
         logger.info("User edited reimbursement with an id of " + reimbId + ".");
         return reimbursementDao.editUnresolvedReimbursement(rId, sanitizedDto);
-
     }
 
     public boolean updateReimbursementStatus(UpdateReimbursementStatusDTO dto, String reimbId) throws SQLException, ReimbursementAlreadyResolved, ReimbursementDoesNotExist, InvalidJsonBodyProvided {
@@ -150,18 +152,20 @@ public class ReimbursementService {
     }
 
     public boolean deleteUnresolvedReimbursement(String reimbId) throws SQLException, ReimbursementAlreadyResolved, ReimbursementDoesNotExist {
-
-        if(!(getReimbursementById(reimbId).getStatus().equals("Pending"))) {
+        Reimbursement reimbToDelete = getReimbursementById(reimbId);
+        if(!(reimbToDelete.getStatus().equals("Pending"))) {
             throw new ReimbursementAlreadyResolved("This reimbursement has already been approved or denied. Unable to make changes at this time.");
         }
         int rId = Integer.parseInt(reimbId);
+        String imageToDelete = reimbToDelete.getReceiptUrl().split("/")[4];
+        uploadImageUtility.deleteImage(imageToDelete);
         logger.info("User deleted a reimbursement with an id of " + rId + ".");
         return reimbursementDao.deleteUnresolvedReimbursement(rId);
     }
 
     public String validateDepartment(String department) throws InvalidQueryParamProvided {
         String dept = department.toLowerCase();
-        if (!(dept.equals("management") || dept.equals("finance")  || dept.equals("hr") || dept.equals("it") || dept.equals("marketing") || dept.equals("sales") || dept.equals("quality assurance"))) {
+        if (!(dept.equals("management") || dept.equals("finance") || dept.equals("hr") && dept.equals("it") || dept.equals("marketing") || dept.equals("sales") || dept.equals("quality assurance"))) {
             throw new InvalidQueryParamProvided("Provided department is not a valid department. Input: " + department);
         }
 

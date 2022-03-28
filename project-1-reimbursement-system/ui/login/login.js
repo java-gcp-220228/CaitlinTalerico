@@ -30,6 +30,7 @@ loginBtn.addEventListener('click', async () => {
 
         localStorage.setItem('user_id', user.id); // Keep track of the user's id
         localStorage.setItem('user_role', user.userRole.id); // Keep track of the user's role
+        localStorage.setItem('user_name', `${user.firstName} ${user.lastName}`)
     
         if (user.userRole.id < 300) {
             window.location.pathname = '../managers/manager-page.html';

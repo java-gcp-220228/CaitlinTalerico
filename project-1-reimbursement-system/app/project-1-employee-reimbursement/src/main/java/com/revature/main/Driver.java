@@ -1,9 +1,6 @@
 package com.revature.main;
 
-import com.revature.controller.AuthenticationController;
-import com.revature.controller.Controller;
-import com.revature.controller.ExceptionController;
-import com.revature.controller.ReimbursementController;
+import com.revature.controller.*;
 import io.javalin.Javalin;
 
 public class Driver {
@@ -12,7 +9,7 @@ public class Driver {
             config.enableCorsForAllOrigins();
         });
 
-        map(app, new AuthenticationController(), new ReimbursementController(), new ExceptionController());
+        map(app, new AuthenticationController(), new ReimbursementController(), new ExceptionController(), new UserController());
 
         app.start(8081);
     }
