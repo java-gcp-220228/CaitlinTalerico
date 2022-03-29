@@ -40,3 +40,8 @@ h1{
 .container {
     text-align: center !important;
 }
+
+.navbar {
+    padding-bottom: 7%;
+    margin-bottom: 7%;
+}

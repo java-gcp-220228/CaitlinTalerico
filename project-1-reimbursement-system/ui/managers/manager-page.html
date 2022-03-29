@@ -37,11 +37,13 @@
       </nav>
     <h1 id="welcome-tag"></h1>
 
-    <h2>Reimbursements</h2>
-    <div id="filter-options">
-        <label for="department-filter">Department: </label>
-        <select id="department-filter">
-            <option value="Any">Any</option>
+    <div class="container reimb-table">
+    
+        <div class="row" id="filter-options">
+                <div class="col-4">
+                    <label for="department-filter">Department: </label>
+                    <select id="department-filter">
+            <option value="Any" selected>Any</option>
             <option value="Management">Management</option>
             <option value="Finance">Finance</option>
             <option value="HR">HR</option>
@@ -50,20 +52,26 @@
             <option value="Sales">Sales</option>
             <option value="Quality Assurance">Quality Assurance</option>
         </select>
-        <span id="user-filter-box">
-            <label for="user-filter">User: </label>
-            <select id="user-filter">
-                <option value="Any">Any</option>
-            </select>
-        </span>
-        <label for="status-filter">Status: </label>
-        <select id="status-filter">
-            <option value="Any">Any</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-        </select>
-    </div>
+                </div>
+                <div class="col-4">
+                    <span id="user-filter-box">
+                        <label for="user-filter">User: </label>
+                        <select id="user-filter">
+                            <option value="Any" selected>Any</option>
+                        </select>
+                    </span>
+                    
+                </div>
+            <div class="col-4">
+                <label for="status-filter">Status: </label>
+                <select id="status-filter">
+                    <option value="Any" selected>Any</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+        </div>
     <table id="reimbursement-tbl" class="table table-striped">
         <thead>
             <th>Status</th>

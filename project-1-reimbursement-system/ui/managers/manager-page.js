@@ -90,7 +90,7 @@ async function populateReimbursementsTable() {
             td4.innerText = ticket.lastName;
 
             let td5 = document.createElement('td');
-            td5.innerText = ticket.amount;
+            td5.innerText = `$${ticket.amount}`;
 
             let td6 = document.createElement('td');
             td6.innerText = ticket.type;

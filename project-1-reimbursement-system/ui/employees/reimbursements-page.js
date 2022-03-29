@@ -21,6 +21,11 @@ title.innerText = `Tickets | ${localStorage.getItem('user_name').split(' ')[0]}`
 let filterBtn = document.querySelector("#filter-status");
 filterBtn.addEventListener('click', populateReimbursementsTable);
 
+let pageLink = document.querySelector(".reimb-page-link a");
+if (localStorage.getItem('user_role') < 300) {
+    pageLink.innerText = 'Manage Reimbursements';
+    pageLink.setAttribute('href', '../managers/manager-page.html');
+}
 
 async function populateReimbursementsTable() {
     let filter = document.querySelector("#ticket-filter").value;
@@ -195,28 +200,35 @@ function openFormModal() {
 
     
     submitBtn.addEventListener('click', async () => {
-        
+         let errorMsg = document.querySelector("#error-msg");
         submitBtn.disabled = true;
 
-        let formData = new FormData();
-        formData.append('type', typeInput.value);
-        formData.append('description', descriptionInput.value);
-        formData.append('amount', amountInput.value);
-        formData.append('image', imageInput.files[0]);
-    
-        try {
-            let res = await fetch(`http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements`, {
-    
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        if (typeInput.value && descriptionInput.value && amountInput.value && imageInput.files[0]){
+            let formData = new FormData();
+            formData.append('type', typeInput.value);
+            formData.append('description', descriptionInput.value);
+            formData.append('amount', amountInput.value);
+            formData.append('image', imageInput.files[0]);
+        
+            try {
+                let res = await fetch(`http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements`, {
+        
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                }
+            });
+            populateReimbursementsTable();
+            } catch (e) {
+                console.log(e);
             }
-        });
-        populateReimbursementsTable();
-        } catch (e) {
-            console.log(e);
+        } else {
+           errorMsg.innerText = 'You must fill out all fields to submit a request.';
+           submitBtn.disabled = false;
         }
+
+       
     });
 }
 

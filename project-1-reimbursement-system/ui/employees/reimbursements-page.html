@@ -25,7 +25,7 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item reimb-page-link">
                 <a href="../employees/reimbursements-page.html" aria-current="page" class="nav-link">My Reimbursements</a>
             </li>
               <li class="nav-item">
@@ -37,31 +37,43 @@
       </nav>
     <h1 id="welcome-tag"></h1>
 
-    <h2>Reimbursements</h2>
-    <label for="ticket-filter">Type: </label>
-    <select id="ticket-filter">
-        <option value="Any"></option>
-        <option value="Pending">Pending</option>
-        <option value="Approved">Approved</option>
-        <option value="Rejected">Rejected</option>
-    </select>
-    <button id="filter-status">Filter</button>
-    <table id="reimbursement-tbl" class="table table-striped">
-        <thead>
-            <th>Status</th>
-            <th>Submitted</th>
-            <th>Amount</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Details</th>
-        </thead>
-        <tbody>
+    
+    
+    <div class="container reimb-table">
+    
+    <div class="row">
+        <div class="col-md-6">
+            <label for="ticket-filter">Type: </label>
+            <select id="ticket-filter">
+            <option value="Any" selected>Any</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+        <button id="filter-status" class="btn btn-primary">Filter</button>
+        </div>
+        <div class="col-md-6">
+            <button id="add-reimbursement-btn" data-bs-toggle="modal" data-bs-target="#submit-form-modal" class="btn btn-primary">Add Reimbursement</button>
+        </div>
         
-        </tbody>
-    </table>
-    <div>
-        <button id="add-reimbursement-btn" data-bs-toggle="modal" data-bs-target="#submit-form-modal">Add Reimbursement</button>
+        
     </div>
+        <table id="reimbursement-tbl" class="table table-striped">
+            <thead>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Details</th>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+       
+    </div>
+    
 
     <div class="modal fade" id="ticket-modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -131,6 +143,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
+                    <h5 id="error-msg"></h5>
                     <div class="row g-3">
                         <div>
                             <label for="amount-input">Amount: </label>

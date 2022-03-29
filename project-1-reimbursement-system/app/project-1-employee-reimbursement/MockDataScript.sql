@@ -31,7 +31,7 @@ values
 ('costa_toby', crypt('costarica2022','saltitupbuttercup'), 'Toby', 'Flenderson', 'toby_flenderson@dundermiffin.com', 300),
 ('it_guy', crypt('P@55word', 'saltitupbuttercup'), 'Nick', 'Glasseu', 'nick11@dundermifflin.net', 400),
 ('hip_hop', crypt('it4life', 'saltitupbuttercup'), 'Sadiq', 'Vaidya', 'sadiq@dundermifflin.com', 400),
-('PrincessKelly', crypt('kellyandryan', 'saltitupbuttercup'), 'Kelly', 'Kapor', 'cute_kelly@dundermifflin.com', 500),
+('PrincessKelly', crypt('kellyandryan', 'saltitupbuttercup'), 'Kelly', 'Kapoor', 'cute_kelly@dundermifflin.com', 500),
 ('BeetFarmer', crypt('battleStarGalactica1', 'saltitupbuttercup'), 'Dwight', 'Schrute', 'dwight_schrute@dundermifflin.net', 600),
 ('jim_hal', crypt('P@mB33sly', 'saltitupbuttercup'), 'Jim', 'Halpert', 'jim_halpert@dundermifflin.com', 600),
 ('not_creed', crypt('notapassword', 'saltitupbuttercup'), 'Creed', 'Bratton', 'creed_bratt@dundermifflin.com', 700),
