@@ -60,8 +60,7 @@ async function populateReimbursementsTable() {
                 td1.innerText = "✔";
                 td1.setAttribute("color", "green");
             } else {
-                td1.innerText = "🅧";
-                td1.setAttribute("color", "red"); 
+                td1.innerText = "❌";
             }
 
             let td2 = document.createElement('td');
@@ -73,7 +72,7 @@ async function populateReimbursementsTable() {
             let td4 = document.createElement('td');
             td4.innerText = ticket.type;
 
-            let td5 = document.createElement('Description');
+            let td5 = document.createElement('td');
             td5.innerText = ticket.description;
 
             let td6 = document.createElement('td');
