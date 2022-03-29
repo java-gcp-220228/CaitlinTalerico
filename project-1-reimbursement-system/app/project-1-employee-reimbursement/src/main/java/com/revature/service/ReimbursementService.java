@@ -16,7 +16,10 @@ import javax.naming.SizeLimitExceededException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -42,8 +45,10 @@ public class ReimbursementService {
 
         AddReimbursementDTO sanitizedDto = sanitizeNewReimbursement(dto);
         // Add timestamp
-        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
-        Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
+        Instant instant = Instant.now();
+        ZoneId z = ZoneId.of("America/New_York");
+        ZonedDateTime zdt = instant.atZone(z);
+        Timestamp submitted = Timestamp.from(zdt.toInstant());
         sanitizedDto.setReimbSubmitted(submitted);
 
         // Get URL for image

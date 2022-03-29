@@ -15,6 +15,9 @@ window.addEventListener('load', (event) => {
     populateReimbursementsTable();
 });
 
+let title = document.querySelector('title');
+title.innerText = `Tickets | ${localStorage.getItem('user_name').split(' ')[0]}`;
+
 let filterBtn = document.querySelector("#filter-status");
 filterBtn.addEventListener('click', populateReimbursementsTable);
 
@@ -78,6 +81,8 @@ async function populateReimbursementsTable() {
             aUrl.setAttribute("id", "detail-link");
             aUrl.setAttribute("href", "#");
             aUrl.innerText = "Details";
+            aUrl.setAttribute('data-bs-toggle',"modal");
+            aUrl.setAttribute('data-bs-target', "#ticket-modal");
 
             td6.appendChild(aUrl);
 
@@ -116,8 +121,6 @@ async function populateReimbursementsTable() {
 
 async function openDetailsModal(reimbursement) {
     let modal = document.querySelector("#ticket-modal");
-
-    let span = document.querySelector(".close");
 
     modal.style.display = "block";
 
@@ -162,6 +165,8 @@ async function openDetailsModal(reimbursement) {
 
     let image = document.querySelector(".modal-content img");
     image.setAttribute("src", reimbursement.receiptUrl);
+    let imageLink = document.querySelector("#image-link");
+    imageLink.setAttribute('href', reimbursement.receiptUrl);
 
     let deleteButton = document.querySelector("#delete-btn");
     if (reimbursement.status === "Pending") {
@@ -172,16 +177,6 @@ async function openDetailsModal(reimbursement) {
         deleteButton.style.display = "none";
         deleteButton.disabled = true;
     }
-
-    span.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    });
 }
 
 let ticketBtn = document.querySelector("#add-reimbursement-btn");
@@ -189,7 +184,6 @@ ticketBtn.addEventListener('click', openFormModal);
 function openFormModal() {
     let submitBtn = document.querySelector("#submit-btn");
     submitBtn.disabled = false;
-    let modal = document.querySelector("#submit-form-modal");
     let typeInput = document.querySelector("#ticket-type");
     let descriptionInput = document.querySelector("#textbox");
     let amountInput = document.querySelector("#amount-input");
@@ -200,16 +194,6 @@ function openFormModal() {
     amountInput.value = 0;
     imageInput.value="";
 
-    let span = document.querySelector("#submit-form-modal .close");
-
-    modal.style.display = "block";
-    
-
-    window.addEventListener('click', (event) => {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    });
     
     submitBtn.addEventListener('click', async () => {
         
@@ -231,15 +215,10 @@ function openFormModal() {
             }
         });
         populateReimbursementsTable();
-        modal.style.display = "none";
         } catch (e) {
             console.log(e);
         }
     });
-    span.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
-
 }
 
 async function deleteTicket(ticketId) {
@@ -254,8 +233,6 @@ async function deleteTicket(ticketId) {
     if (res.status === 200) {
         populateReimbursementsTable();
         let modal = document.querySelector("#ticket-modal");
-
-        modal.style.display = "none";
     }
 
 }

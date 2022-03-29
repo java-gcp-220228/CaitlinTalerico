@@ -16,6 +16,8 @@ filterUser.onchange = populateReimbursementsTable;
 
 let filterStatus = document.querySelector('#status-filter');
 filterStatus.onchange = populateReimbursementsTable;
+let title = document.querySelector('title');
+title.innerText = `Manage | ${localStorage.getItem('user_name').split(' ')[0]}`;
 
 let welcomeText = document.querySelector('#welcome-tag');
 welcomeText.innerText = `Welcome back, ${localStorage.getItem('user_name')}!`;
@@ -102,6 +104,8 @@ async function populateReimbursementsTable() {
             aUrl.setAttribute("id", "detail-link");
             aUrl.setAttribute("href", "#");
             aUrl.innerText = "Details";
+            aUrl.setAttribute('data-bs-toggle',"modal");
+            aUrl.setAttribute('data-bs-target', "#ticket-modal");
 
             td8.appendChild(aUrl);
 
@@ -141,12 +145,6 @@ async function populateReimbursementsTable() {
 }
 
 async function openModal(reimbursement) {
-    let modal = document.querySelector("#ticket-modal");
-
-    let span = document.querySelector(".close");
-
-    modal.style.display = "block";
-
     let status = document.querySelector(".status");
     status.innerText = reimbursement.status;
 
@@ -162,8 +160,6 @@ async function openModal(reimbursement) {
     let resolveTime = document.querySelector(".resolved-timestamp");
     let resolverName = document.querySelector(".resolver-name");
     let resolverContact = document.querySelector(".resolver-contact");
-    console.log(reimbursement.submitTimestamp);
-    console.log(reimbursement.resolveTimestamp);
     if (reimbursement.resolveTimestamp) {
         try {
             const URL = `http://localhost:8081/users/${reimbursement.resolverId}`
@@ -198,6 +194,8 @@ async function openModal(reimbursement) {
 
     let image = document.querySelector(".modal-content img");
     image.setAttribute("src", reimbursement.receiptUrl);
+    let imageLink = document.querySelector("#image-link");
+    imageLink.setAttribute('href', reimbursement.receiptUrl);
 
     let approveBtn = document.querySelector("#approve-btn");
     let rejectBtn = document.querySelector("#reject-btn");
@@ -216,16 +214,6 @@ async function openModal(reimbursement) {
         rejectBtn.disabled = true;
         rejectBtn.style.display = "none"; 
     }
-
-    span.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    });
 }
 
 async function updateRequestStatus(reimbId, statusId) {
