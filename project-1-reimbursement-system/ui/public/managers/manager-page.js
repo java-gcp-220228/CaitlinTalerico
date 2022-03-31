@@ -37,19 +37,19 @@ async function populateReimbursementsTable() {
     let URL;
 
     if (filterDepartment.value == "Any" && filterStatus.value == "Any" && filterUser.value == "Any") {
-        URL = 'http://localhost:8081/reimbursements';
+        URL = 'http://34.135.169.134:2000/reimbursements';
     } else if (filterDepartment.value != "Any" && filterStatus.value == "Any" && filterUser.value == "Any") {
-        URL = `http://localhost:8081/reimbursements?department=${filterDepartment.value}`;
+        URL = `http://34.135.169.134:2000/reimbursements?department=${filterDepartment.value}`;
     } else if (filterDepartment.value != "Any" && filterStatus.value != "Any" && filterUser.value == "Any") {
-        URL = `http://localhost:8081/reimbursements?department=${filterDepartment.value}&status=${filterStatus.value}`;
+        URL = `http://34.135.169.134:2000/reimbursements?department=${filterDepartment.value}&status=${filterStatus.value}`;
     } else if (filterStatus.value != "Any" && filterUser.value != "Any") {
-        URL = `http://localhost:8081/users/${filterUser.value}/reimbursements?status=${filterStatus.value}`;
+        URL = `http://34.135.169.134:2000/users/${filterUser.value}/reimbursements?status=${filterStatus.value}`;
     } else if (filterUser.value != "Any") {
-        URL = `http://localhost:8081/users/${filterUser.value}/reimbursements`;
+        URL = `http://34.135.169.134:2000/users/${filterUser.value}/reimbursements`;
     } else if (filterStatus.value != "Any") {
-        URL = `http://localhost:8081/reimbursements?status=${filterStatus.value}`;
+        URL = `http://34.135.169.134:2000/reimbursements?status=${filterStatus.value}`;
     } else if (filterDepartment.value != "Any") {
-        URL = `http://reimbursements?department=${filterDepartment.value}`;
+        URL = `http://34.135.169.134:2000/reimbursements?department=${filterDepartment.value}`;
     }
 
 
@@ -120,6 +120,7 @@ async function populateReimbursementsTable() {
             tbody.appendChild(tr);
 
             aUrl.addEventListener('click', async() => {
+                console.log(ticket.urlDetails)
                 try {
                     let res2 = await fetch(ticket.urlDetails, {
                         method: 'GET',
@@ -161,7 +162,7 @@ async function openModal(reimbursement) {
     let resolverContact = document.querySelector(".resolver-contact");
     if (reimbursement.resolveTimestamp) {
         try {
-            const URL = `http://localhost:8081/users/${reimbursement.resolverId}`
+            const URL = `http://34.135.169.134:2000/users/${reimbursement.resolverId}`
             let res = await fetch(URL, {
                 method: 'GET',
                 headers: {
@@ -216,7 +217,7 @@ async function openModal(reimbursement) {
 }
 
 async function updateRequestStatus(reimbId, statusId) {
-    const url = `http://localhost:8081/reimbursements/${reimbId}`;
+    const url = `http://34.135.169.134:2000/reimbursements/${reimbId}`;
 
     const jsonString = JSON.stringify({
         "resolverId": null,
@@ -245,10 +246,10 @@ async function updateRequestStatus(reimbId, statusId) {
 async function defineUserFilter(department) {
     let URL;
     if (department == "Any") {
-        URL = `http://localhost:8081/users`;
+        URL = `http://34.135.169.134:2000/users`;
         
     } else {
-        URL = `http://localhost:8081/users?department=${department}`;
+        URL = `http://34.135.169.134:2000/users?department=${department}`;
     }
     let selectSpanBox = document.querySelector("#user-filter-box");
     while (selectSpanBox.lastChild) {

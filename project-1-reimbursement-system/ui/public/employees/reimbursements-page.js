@@ -31,13 +31,13 @@ async function populateReimbursementsTable() {
     let filter = document.querySelector("#ticket-filter").value;
     let URL;
     if (filter === "Any") {
-         URL = `http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements`;
+         URL = `http://34.135.169.134:2000/users/${localStorage.getItem('user_id')}/reimbursements`;
     } else if (filter === "Pending") {
-        URL = `http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements?status=Pending`;
+        URL = `http://34.135.169.134:2000/users/${localStorage.getItem('user_id')}/reimbursements?status=Pending`;
     } else if (filter === "Approved") {
-        URL = `http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements?status=Approved`;
+        URL = `http://34.135.169.134:2000/users/${localStorage.getItem('user_id')}/reimbursements?status=Approved`;
     } else if (filter === "Rejected") {
-        URL = `http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements?status=Rejected`;
+        URL = `http://34.135.169.134:2000/users/${localStorage.getItem('user_id')}/reimbursements?status=Rejected`;
     }
     
 
@@ -138,7 +138,7 @@ async function openDetailsModal(reimbursement) {
     let resolverName = document.querySelector(".resolver-name");
     let resolverContact = document.querySelector(".resolver-contact");
     if (reimbursement.resolveTimestamp ) {
-        const urlUser = `http://localhost:8081/users/${reimbursement.resolverId}`;
+        const urlUser = `http://34.135.169.134:2000/users/${reimbursement.resolverId}`;
 
         let response = await fetch(urlUser, {
             method: 'GET',
@@ -211,7 +211,7 @@ function openFormModal() {
             formData.append('image', imageInput.files[0]);
         
             try {
-                let res = await fetch(`http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements`, {
+                let res = await fetch(`http://34.135.169.134:2000/users/${localStorage.getItem('user_id')}/reimbursements`, {
         
                 method: 'POST',
                 body: formData,
@@ -233,7 +233,7 @@ function openFormModal() {
 }
 
 async function deleteTicket(ticketId) {
-    const url = `http://localhost:8081/users/${localStorage.getItem('user_id')}/reimbursements/${ticketId}`;
+    const url = `http://34.135.169.134:2000/users/${localStorage.getItem('user_id')}/reimbursements/${ticketId}`;
 
     let res = await fetch(url, {
         method: 'DELETE',

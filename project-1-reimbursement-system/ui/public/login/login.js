@@ -22,7 +22,7 @@ loginBtn.addEventListener('click', async () => {
     let passwordInput = document.querySelector("#password");
 
     // Connection to backend
-    const URL = 'http://localhost:8081/login';
+    const URL = 'http://34.135.169.134:2000/login';
 
 
     // Convert Username/Password into a JSON object
