@@ -10,6 +10,8 @@ import com.revature.model.Reimbursement;
 
 import com.revature.utility.UploadImageUtility;
 import io.javalin.http.UploadedFile;
+
+import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -51,13 +53,13 @@ public class ReimbursementServiceTest {
         closeable.close();
     }
 
-
+    @Ignore
     @Test
     public void testAddValidReimbursement() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
         TimeZone.setDefault(TimeZone.getTimeZone("EST"));
         Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
 
-        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+        InputStream image = new FileInputStream("C://Users/cetal/Pictures/FFXIV/Spider-Cat.jpg");
 
 
 
@@ -74,12 +76,13 @@ public class ReimbursementServiceTest {
         Assertions.assertEquals(expected.getStatus(), actual.getStatus());
     }
 
+    @Ignore
     @Test
     public void testAddValidReimbursementTrimDescription() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
         TimeZone.setDefault(TimeZone.getTimeZone("EST"));
         Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
 
-        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+        InputStream image = new FileInputStream("C://Users/cetal/Pictures/FFXIV/Spider-Cat.jpg");
 
 
 
@@ -96,12 +99,13 @@ public class ReimbursementServiceTest {
         Assertions.assertEquals(expected.getStatus(), actual.getStatus());
     }
 
+    @Ignore
     @Test
     public void testAddReimbursementInvalidImage() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
         TimeZone.setDefault(TimeZone.getTimeZone("EST"));
         Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
 
-        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+        InputStream image = new FileInputStream("C://Users/cetal/Pictures/FFXIV/Spider-Cat.jpg");
 
 
 
@@ -139,12 +143,13 @@ public class ReimbursementServiceTest {
         });
     }
 
+    @Ignore
     @Test
     public void testAddReimbursementImageSizeTooLarge() throws SQLException, SizeLimitExceededException, InvalidFileTypeException, IOException, InvalidJsonBodyProvided {
         TimeZone.setDefault(TimeZone.getTimeZone("EST"));
         Timestamp submitted = Timestamp.valueOf(LocalDateTime.now());
 
-        InputStream image = new FileInputStream("C://Users/kitty/Documents/My Laptop/Pictures/ola.png");
+        InputStream image = new FileInputStream("C://Users/cetal/Pictures/FFXIV/Spider-Cat.jpg");
 
 
 
