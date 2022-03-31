@@ -33,7 +33,7 @@ public class UploadImageUtility {
     }
     private static Bucket getBucket(String bucketName) {
         try{
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(System.getenv("GOOGLE_APP_CREDENTIALS")))
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS")))
                     .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
             Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
             Bucket bucket = storage.get(bucketName);
