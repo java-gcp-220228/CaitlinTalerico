@@ -25,17 +25,17 @@ create extension pgcrypto;
 
 INSERT INTO users (username, user_password, first_name, last_name, user_email, user_role_id)
 values
-('CatMom1', crypt('ilovemycats!', 'saltitupbuttercup'), 'Angela', 'Martin', 'angela_martin1@dundermifflen.net', 200),
-('oscar_m', crypt('04jgi87uy', 'saltitupbuttercup'), 'Oscar', 'Martinez', 'oscar12@dundermifflen.net', 200),
-('cookie_monster', crypt('password', 'saltitupbuttercup'), 'Kevin', 'Malone', 'kevin32@dundermifflin.net', 200),
-('costa_toby', crypt('costarica2022','saltitupbuttercup'), 'Toby', 'Flenderson', 'toby_flenderson@dundermiffin.com', 300),
-('it_guy', crypt('P@55word', 'saltitupbuttercup'), 'Nick', 'Glasseu', 'nick11@dundermifflin.net', 400),
-('hip_hop', crypt('it4life', 'saltitupbuttercup'), 'Sadiq', 'Vaidya', 'sadiq@dundermifflin.com', 400),
-('PrincessKelly', crypt('kellyandryan', 'saltitupbuttercup'), 'Kelly', 'Kapoor', 'cute_kelly@dundermifflin.com', 500),
-('BeetFarmer', crypt('battleStarGalactica1', 'saltitupbuttercup'), 'Dwight', 'Schrute', 'dwight_schrute@dundermifflin.net', 600),
-('jim_hal', crypt('P@mB33sly', 'saltitupbuttercup'), 'Jim', 'Halpert', 'jim_halpert@dundermifflin.com', 600),
-('not_creed', crypt('notapassword', 'saltitupbuttercup'), 'Creed', 'Bratton', 'creed_bratt@dundermifflin.com', 700),
-('number1boss', crypt('12345', 'saltitupbuttercup'), 'Michael', 'Scott', 'michael_scott@dundermifflin.net', 100);
+('CatMom1', crypt('ilovemycats!', gen_salt('md5')), 'Angela', 'Martin', 'angela_martin1@dundermifflen.net', 200),
+('oscar_m', crypt('04jgi87uy', gen_salt('md5')), 'Oscar', 'Martinez', 'oscar12@dundermifflen.net', 200),
+('cookie_monster', crypt('password', gen_salt('md5')), 'Kevin', 'Malone', 'kevin32@dundermifflin.net', 200),
+('costa_toby', crypt('costarica2022',gen_salt('md5')), 'Toby', 'Flenderson', 'toby_flenderson@dundermiffin.com', 300),
+('it_guy', crypt('P@55word', gen_salt('md5')), 'Nick', 'Glasseu', 'nick11@dundermifflin.net', 400),
+('hip_hop', crypt('it4life', gen_salt('md5')), 'Sadiq', 'Vaidya', 'sadiq@dundermifflin.com', 400),
+('PrincessKelly', crypt('kellyandryan', gen_salt('md5')), 'Kelly', 'Kapoor', 'cute_kelly@dundermifflin.com', 500),
+('BeetFarmer', crypt('battleStarGalactica1', gen_salt('md5')), 'Dwight', 'Schrute', 'dwight_schrute@dundermifflin.net', 600),
+('jim_hal', crypt('P@mB33sly', gen_salt('md5')), 'Jim', 'Halpert', 'jim_halpert@dundermifflin.com', 600),
+('not_creed', crypt('notapassword', gen_salt('md5')), 'Creed', 'Bratton', 'creed_bratt@dundermifflin.com', 700),
+('number1boss', crypt('12345', gen_salt('md5')), 'Michael', 'Scott', 'michael_scott@dundermifflin.net', 100);
 
 select *
 from users;

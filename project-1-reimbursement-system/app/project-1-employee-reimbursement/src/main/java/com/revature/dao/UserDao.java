@@ -22,13 +22,12 @@ public class UserDao {
                     "from users u " +
                     "inner join user_roles ur " +
                     "on ur.user_role_id = u.user_role_id " +
-                    "where u.username = ? and u.user_password = crypt(? , ?)";
+                    "where u.username = ? and u.user_password = crypt(? , u.user_password)";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, dto.getUsername());
             pstmt.setString(2, dto.getPassword());
-            pstmt.setString(3, System.getenv("salt"));
 
             ResultSet rs = pstmt.executeQuery();
 
