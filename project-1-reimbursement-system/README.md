@@ -34,10 +34,23 @@ List of features:
 - Initial Setup:
 ```
 git clone https://github.com/java-gcp-220228/CaitlinTalerico/new/main/project-1-reimbursement-system
+gradle build
+```
+- Required Environmental Variables:
+  - Database:
+    - Username, Password, URL
+  - GCP Cloud Storage
+    - Google Generate Service Key
+- Frontend Server:
+  - To run a development server run:
+```
+live-server --port=8081
 ```
 
 
+
 ## Usage
+- Examples of the Application in Work:
 #### Manager Logged In
 ![Logged-In-Image](https://storage.googleapis.com/misc-github-images-bucket/Manager_Login.PNG)
 #### Manager View
@@ -47,3 +60,12 @@ git clone https://github.com/java-gcp-220228/CaitlinTalerico/new/main/project-1-
 #### Reimbursement Ticket
 ![Reimbursement-Ticket-Image](https://storage.googleapis.com/misc-github-images-bucket/reimbursement-ticker.PNG)
 
+## Tests
+Unit tests have been written for the Backend Service layers. To execute the tests run:
+```
+gradle test
+```
+
+## Questions
+
+If you have any additional questions or comments, please reach out to me. You can find more of my work [here](https://github.com/cait-tal).
